@@ -18,14 +18,7 @@
 
 ## About The Project
 
-Phishing scams are becoming increasingly sophisticated, making it difficult for everyday users to distinguish between legitimate and malicious messages. This vulnerability puts people at constant risk of financial loss, data theft, and account compromise.
-
-**PhishGuard** is designed to be a simple, fast, and effective first line of defense. It empowers users to quickly verify suspicious content by providing an instant risk score (from 0 to 100). By leveraging OCR, content analysis, and a unique community-powered reporting system, our goal is to help users make safer decisions before they click a dangerous link or give away sensitive information.
-
-This app is built for everyone, especially:
-* Users who are not tech-savvy, including older adults.
-* Any daily smartphone user on iOS or Android.
-* Office workers who are frequent targets of email-based scams.
+To combat the growing threat of phishing, **PhishGuard** offers an immediate first line of defense. Our mobile app allows you to quickly analyze suspicious messages by pasting text or uploading a screenshot. In seconds, you get a clear risk score from 0 to 100, empowering you to identify and avoid dangerous scams before you click.
 
 ---
 
@@ -67,9 +60,9 @@ To contribute to or run this project, you will need the following software insta
 
 This project is being developed by a dedicated team of students:
 
--   Ardıl Yüce
--   Kartal Özbalkanlı
--   Zeynep Zilan Turunç
--   Utku Çağlar
--   Arin Ikizogullari
--   Ayberk Savaş
+- Ardıl Yüce
+- Kartal Özbalkanlı
+- Zeynep Zilan Turunç
+- Utku Çağlar
+- Arin Ikizogullari
+- Ayberk Savaş
