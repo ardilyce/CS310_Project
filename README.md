@@ -120,11 +120,3 @@ We have identified the following potential challenges and our strategies to addr
 
 This project is being developed by a dedicated team of students:
 
-| Name                  | Student ID |
-| --------------------- | ---------- |
-| Ardıl Yüce            | 32375      |
-| Kartal Özbalkanlı     | 33960      |
-| Zeynep Zilan Turunç   | 32066      |
-| Utku Çağlar           | 32579      |
-| Arin İkizoğulları     | 34472      |
-| Ayberk Savaş          | 32433      |
