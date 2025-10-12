@@ -12,8 +12,6 @@
 - [Core Features](#core-features)
 - [Technology Stack](#technology-stack)
 - [Getting Started](#getting-started)
-- [Roadmap](#roadmap)
-- [Challenges & Considerations](#challenges--considerations)
 - [The Team](#the-team)
 
 ---
@@ -35,7 +33,7 @@ This app is built for everyone, especially:
 
 * **Easy Input**: Paste text directly or upload a screenshot for analysis.
 * **Image Scanning (OCR)**: Automatically extracts text from any uploaded image using Optical Character Recognition.
-* **Content Analysis**: Scans text for common scam-related keywords and checks for insecure link protocols (`http` vs. `https`.)
+* **Content Analysis**: Scans text for common scam-related keywords and checks for insecure link protocols (`http` vs. `https`).
 * **Instant Risk Score**: A clear, easy-to-understand risk score from 0 to 100 is generated in seconds.
 * **Secure User Accounts**: Users can sign up and log in securely using Firebase Authentication.
 * **Scan History**: A private history of all past scans is saved to the user's account for their reference.
@@ -65,37 +63,13 @@ To contribute to or run this project, you will need the following software insta
 
 ---
 
-## Roadmap
-
-While our core features provide a solid foundation, we have several "nice-to-have" features planned for future development:
-
-- [ ] **Dark Mode**: Implement a dark theme for user comfort.
-- [ ] **Share Results**: Add a button to easily share the analysis results with others.
-- [ ] **Advanced URL Checking**: Integrate with an external API like the **Google Safe Browsing API** for more robust link verification.
-- [ ] **Security Tips**: Display actionable security advice to the user after each scan.
-
----
-
-## Challenges & Considerations
-
-We have identified the following potential challenges and our strategies to address them:
-
-* **OCR Accuracy**: Text recognition from screenshots may not always be perfect.
-    * **Solution**: We will implement a feature that allows users to review and edit the extracted text before the analysis is run.
-* **Scoring Algorithm Fairness**: The scoring model must be balanced to avoid frequent false positives (flagging safe messages) or false negatives (missing real threats).
-    * **Solution**: We will iteratively test and refine the algorithm based on a diverse set of real-world examples.
-* **Data Privacy**: Users will be submitting potentially sensitive personal messages.
-    * **Solution**: We are committed to user privacy by hashing all sensitive stored data (like reported email addresses), minimizing data collection, and maintaining a transparent privacy policy.
-
----
-
 ## The Team
 
 This project is being developed by a dedicated team of students:
 
-- Ardıl Yüce
-- Kartal Özbalkanlı
-- Zeynep Zilan Turunç
-- Utku Çağlar
-- Arin Ikizogullari
-- Ayberk Savaş
+-   Ardıl Yüce
+-   Kartal Özbalkanlı
+-   Zeynep Zilan Turunç
+-   Utku Çağlar
+-   Arin Ikizogullari
+-   Ayberk Savaş
