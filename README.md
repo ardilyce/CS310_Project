@@ -12,8 +12,6 @@
 - [Core Features](#core-features)
 - [Technology Stack](#technology-stack)
 - [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
 - [Roadmap](#roadmap)
 - [Challenges & Considerations](#challenges--considerations)
 - [The Team](#the-team)
@@ -59,36 +57,11 @@ We are building PhishGuard using a modern, cross-platform technology stack to en
 
 ## Getting Started
 
-To get a local copy up and running, please follow these steps.
+To contribute to or run this project, you will need the following software installed on your machine:
 
-### Prerequisites
-
-You will need to have the following software installed on your machine:
 * Flutter SDK: [Installation Guide](https://docs.flutter.dev/get-started/install)
 * An editor like VS Code or Android Studio.
-* A configured Firebase project.
-
-### Installation
-
-1.  **Clone the repository:**
-    ```sh
-    git clone [https://github.com/your_username/phishguard.git](https://github.com/your_username/phishguard.git)
-    cd phishguard
-    ```
-
-2.  **Set up Firebase:**
-    * You will need to create a `firebase_options.dart` file with your own Firebase project credentials. You can generate this using the FlutterFire CLI.
-    * Follow the guide here: [Add Firebase to your Flutter app](https://firebase.google.com/docs/flutter/setup)
-
-3.  **Install dependencies:**
-    ```sh
-    flutter pub get
-    ```
-
-4.  **Run the app:**
-    ```sh
-    flutter run
-    ```
+* A configured Firebase project to connect with the application.
 
 ---
 
@@ -120,3 +93,9 @@ We have identified the following potential challenges and our strategies to addr
 
 This project is being developed by a dedicated team of students:
 
+- Ardıl Yüce
+- Kartal Özbalkanlı
+- Zeynep Zilan Turunç
+- Utku Çağlar
+- Arin Ikizogullari
+- Ayberk Savaş
