@@ -1,0 +1,20 @@
+verify your account
+reset password
+one time password
+otp
+iban
+wire transfer
+credit card
+cvv
+login credentials
+account suspended
+account deactivated
+update billing
+security alert
+identity verification
+bank details
+ssn
+tax refund
+gift card
+unlock account
+access code
