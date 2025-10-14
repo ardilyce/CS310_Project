@@ -63,11 +63,11 @@ To contribute to or run this project, you will need the following software insta
 
 **PhishingGuard** analyzes messages suspected of being phishing attempts using a **rule-based scoring system**. The analysis follows five main steps:  
 
-1. [Data Acquisition](##data-acquisition)  
-2. [Preprocessing](##preprocessing)  
-3. [Feature Extraction](##feature-extraction)  
-4. [Scoring Mechanism](##scoring-mechanism)  
-5. [Result Interpretation](##result-interpretation)  
+1. [Data Acquisition](#data-acquisition)  
+2. [Preprocessing](#preprocessing)  
+3. [Feature Extraction](#feature-extraction)  
+4. [Scoring Mechanism](#scoring-mechanism)  
+5. [Result Interpretation](#result-interpretation)  
 
 ---
 
