@@ -27,7 +27,10 @@ To combat the growing threat of phishing, **PhishGuard** offers an immediate fir
 
 * **Easy Input**: Paste text directly or upload a screenshot for analysis.
 * **Image Scanning (OCR)**: Automatically extracts text from any uploaded image using Optical Character Recognition.
-* **Content Analysis**: Scans text for common scam-related keywords and checks for insecure link protocols (`http` vs. `https`).
+* **Content Analysis**: The system inspects messages for:  
+  - **Suspicious keywords & phrases** commonly used in phishing.  
+  - **Insecure or deceptive links** (`http` vs. `https`, shortened URLs, IP-based domains, knwon malicious urls).  
+  - **Stylistic red flags** like excessive ALL-CAPS and multiple exclamation marks.  
 * **Instant Risk Score**: A clear, easy-to-understand risk score from 0 to 100 is generated in seconds.
 * **Secure User Accounts**: Users can sign up and log in securely using Firebase Authentication.
 * **Scan History**: A private history of all past scans is saved to the user's account for their reference.
@@ -63,11 +66,11 @@ To contribute to or run this project, you will need the following software insta
 
 **PhishingGuard** analyzes messages suspected of being phishing attempts using a **rule-based scoring system**. The analysis follows five main steps:  
 
-1. [Data Acquisition](#data-acquisition)  
-2. [Preprocessing](#preprocessing)  
-3. [Feature Extraction](#feature-extraction)  
-4. [Scoring Mechanism](#scoring-mechanism)  
-5. [Result Interpretation](#result-interpretation)  
+1. [Data Acquisition](#1-data-acquisition)  
+2. [Preprocessing](#2-preprocessing)  
+3. [Feature Extraction](#3-feature-extraction)  
+4. [Scoring Mechanism](#4-scoring-mechanism)  
+5. [Result Interpretation](#5-result-interpretation)  
 
 ---
 
@@ -114,7 +117,6 @@ Most phishing attempts attempt to trick users into clicking on an **active link*
 The system inspects each link for common phishing indicators, such as:  
 - **Shortened links** that hide the true destination (e.g., `bit.ly`, `t.co`).  
 - **Raw IP addresses** instead of domain names (e.g., `http://192.168.1.5/login`).  
-- **Lookalike domains** designed to mimic trusted services (e.g., `paypa1.com` vs. `paypal.com`).  
 - **Suspicious path segments** suggesting credential harvesting (e.g., `/login`, `/verify`, `/secure`).  
 
 **ii. Cross-Referencing with a Malicious Link Database**  
