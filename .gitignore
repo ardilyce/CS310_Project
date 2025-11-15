@@ -1,0 +1,22 @@
+# Dart
+.dart_tool/
+.packages
+
+# Flutter
+.buildlog/
+build/
+pubspec.lock
+
+# VSCode
+.vscode/
+
+# IntelliJ / Android Studio
+.idea/
+*.iml
+
+# macOS
+.DS_Store
+
+# Flutter generated
+.flutter-plugins
+.flutter-plugins-dependencies
