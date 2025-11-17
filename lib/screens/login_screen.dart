@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'signup_screen.dart';
-import 'image_upload_screen.dart';
-import 'splash_screen.dart';
-import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -294,10 +290,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {
                             // Validate form before navigation
                             if (_formKey.currentState!.validate()) {
-                              // If form is valid, navigate to the image upload screen
+                              // If form is valid, navigate to the  home screen
                               Navigator.pushReplacementNamed(
                                 context,
-                                '/image_upload',
+                                '/home',
                               );
                             }
                           },

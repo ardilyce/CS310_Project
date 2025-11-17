@@ -104,7 +104,7 @@ class _TextInputScreenState extends State<TextInputScreen> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const AnalyzeScreen()),
-                  )
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF0A4DBA),

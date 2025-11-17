@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'image_upload_screen.dart';
-import 'login_screen.dart';
-import 'splash_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -37,11 +34,8 @@ class _SignupScreenState extends State<SignupScreen> {
       canPop: false,
       onPopInvokedWithResult: (bool didPop, Object? result) {
         if (didPop) return;
-        // Navigate to Splash Screen
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const SplashScreen()),
-        );
+        // Navigate back to Login Screen
+        Navigator.pushReplacementNamed(context, '/login');
       },
       child: Scaffold(
         body: Container(
@@ -69,13 +63,8 @@ class _SignupScreenState extends State<SignupScreen> {
                       // Back button
                       IconButton(
                         icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () {
-                          // Navigate to Splash Screen
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => const SplashScreen()),
-                          );
-                        },
+                        onPressed: () =>
+                            Navigator.pushReplacementNamed(context, '/login'),
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                       ),
@@ -407,12 +396,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       child: TextButton(
                         onPressed: () {
                           // Navigate to login screen
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const LoginScreen(),
-                            ),
-                          );
+                          Navigator.pushReplacementNamed(context, '/login');
                         },
                         child: const Text(
                           "Already have an account? Login Here",
@@ -434,13 +418,8 @@ class _SignupScreenState extends State<SignupScreen> {
                         onPressed: () {
                           // Validate form before navigation
                           if (_formKey.currentState!.validate()) {
-                            // If form is valid, navigate to the image upload screen
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const ImageUploadScreen(),
-                              ),
-                            );
+                            // If form is valid, navigate to the home screen
+                            Navigator.pushReplacementNamed(context, '/home');
                           }
                         },
                         style: ElevatedButton.styleFrom(
@@ -472,4 +451,3 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 }
-
