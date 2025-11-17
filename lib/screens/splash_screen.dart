@@ -13,13 +13,10 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     // Navigate to Login Screen after 3 seconds
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
-        );
-      }
+
+    Future.delayed(const Duration(seconds: 2), () {
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, '/login');
     });
   }
 
@@ -48,11 +45,7 @@ class _SplashScreenState extends State<SplashScreen> {
             const SizedBox(height: 200),
 
             // Logo
-            Image.asset(
-              "assets/images/logo.png",
-              width: 130,
-              height: 130,
-            ),
+            Image.asset("assets/images/logo.png", width: 130, height: 130),
 
             const SizedBox(height: 30),
 
@@ -73,10 +66,7 @@ class _SplashScreenState extends State<SplashScreen> {
             const Text(
               "Detect scams before they catch you.",
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 18,
-              ),
+              style: TextStyle(color: Colors.white70, fontSize: 18),
             ),
 
             const Spacer(),
@@ -86,10 +76,7 @@ class _SplashScreenState extends State<SplashScreen> {
               padding: EdgeInsets.only(bottom: 40),
               child: Text(
                 "CS310 Project – Sabancı University",
-                style: TextStyle(
-                  color: Colors.white54,
-                  fontSize: 16,
-                ),
+                style: TextStyle(color: Colors.white54, fontSize: 16),
               ),
             ),
           ],
