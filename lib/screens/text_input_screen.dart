@@ -100,7 +100,7 @@ class _TextInputScreenState extends State<TextInputScreen> {
               child: ElevatedButton(
                 onPressed: () {
                   // TODO: analyze from text logic
-                  Navigator.pushReplacementNamed(context, '/analyze');
+                  Navigator.pushNamed(context, '/analyze');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF0A4DBA),

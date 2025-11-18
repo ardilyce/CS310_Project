@@ -38,10 +38,7 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             // Navigate back to Login screen
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const LoginScreen()),
-            );
+            Navigator.pushReplacementNamed(context, '/login');
           },
         ),
         centerTitle: true,
@@ -74,45 +71,46 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
                   painter: _DashedBorderPainter(),
                   child: _selectedImage == null
                       ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(Icons.camera_alt,
-                          color: Color(0xFF0A4DBA), size: 45),
-                      SizedBox(height: 16),
-                      Text(
-                        "Tap to upload a photo",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                          color: Colors.black,
-                        ),
-                      ),
-                      SizedBox(height: 6),
-                      Text(
-                        "Supported formats: JPG, PNG",
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  )
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(
+                              Icons.camera_alt,
+                              color: Color(0xFF0A4DBA),
+                              size: 45,
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              "Tap to upload a photo",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                                color: Colors.black,
+                              ),
+                            ),
+                            SizedBox(height: 6),
+                            Text(
+                              "Supported formats: JPG, PNG",
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        )
                       : ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Image.file(
-                      _selectedImage!,
-                      width: size,
-                      height: size,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.file(
+                            _selectedImage!,
+                            width: size,
+                            height: size,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                 ),
               ),
             ),
 
             const Spacer(), // BUTONU EN ALTA İTER
-
-
             /// BOTTOM BUTTON
             SizedBox(
               width: double.infinity,
@@ -170,8 +168,10 @@ class _DashedBorderPainter extends CustomPainter {
     for (ui.PathMetric pathMetric in pathMetrics) {
       double distance = 0.0;
       while (distance < pathMetric.length) {
-        final extractPath =
-        pathMetric.extractPath(distance, distance + dashWidth);
+        final extractPath = pathMetric.extractPath(
+          distance,
+          distance + dashWidth,
+        );
         canvas.drawPath(extractPath, paint);
         distance += dashWidth + dashSpace;
       }
