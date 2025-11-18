@@ -93,7 +93,6 @@ class _TextInputScreenState extends State<TextInputScreen> {
             ),
 
             const Spacer(), // Pushes the button to the bottom
-
             /// BOTTOM BUTTON
             SizedBox(
               width: double.infinity,
@@ -101,10 +100,7 @@ class _TextInputScreenState extends State<TextInputScreen> {
               child: ElevatedButton(
                 onPressed: () {
                   // TODO: analyze from text logic
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const AnalyzeScreen()),
-                  );
+                  Navigator.pushReplacementNamed(context, '/analyze');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF0A4DBA),
@@ -156,8 +152,10 @@ class _DashedBorderPainter extends CustomPainter {
     for (ui.PathMetric pathMetric in pathMetrics) {
       double distance = 0.0;
       while (distance < pathMetric.length) {
-        final extractPath =
-        pathMetric.extractPath(distance, distance + dashWidth);
+        final extractPath = pathMetric.extractPath(
+          distance,
+          distance + dashWidth,
+        );
         canvas.drawPath(extractPath, paint);
         distance += dashWidth + dashSpace;
       }

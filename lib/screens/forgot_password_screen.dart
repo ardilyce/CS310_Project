@@ -50,19 +50,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             ),
             content: Text(
               "A password reset link has been sent to ${_emailController.text}. Please check your inbox.",
-              style: const TextStyle(
-                color: Colors.white70,
-                fontSize: 16,
-              ),
+              style: const TextStyle(color: Colors.white70, fontSize: 16),
             ),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(); // Close dialog
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginScreen()),
-                  );
+                  Navigator.pushReplacementNamed(context, '/login');
                 },
                 child: const Text(
                   "Back to Login",
@@ -110,15 +104,17 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       onPressed: () {
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => const LoginScreen()),
+                          MaterialPageRoute(
+                            builder: (context) => const LoginScreen(),
+                          ),
                         );
                       },
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                     ),
-                    
+
                     const SizedBox(height: 40),
-                    
+
                     // Logo
                     Center(
                       child: Image.asset(
@@ -127,9 +123,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         height: 90,
                       ),
                     ),
-                    
+
                     const SizedBox(height: 30),
-                    
+
                     // Title
                     const Center(
                       child: Column(
@@ -162,21 +158,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 50),
-                    
+
                     // Instruction text
                     const Text(
                       "Enter your email address and we will send you a link to reset your password.",
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 15,
-                      ),
+                      style: TextStyle(color: Colors.white70, fontSize: 15),
                     ),
-                    
+
                     const SizedBox(height: 30),
-                    
+
                     // Email field
                     const Text(
                       "E-mail",
@@ -193,23 +186,37 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         hintText: "Enter your email",
-                        hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                        hintStyle: TextStyle(
+                          color: Colors.white.withOpacity(0.5),
+                        ),
                         filled: false,
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Colors.white, width: 1.5),
+                          borderSide: const BorderSide(
+                            color: Colors.white,
+                            width: 1.5,
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Colors.white, width: 2),
+                          borderSide: const BorderSide(
+                            color: Colors.white,
+                            width: 2,
+                          ),
                         ),
                         errorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Colors.red, width: 1.5),
+                          borderSide: const BorderSide(
+                            color: Colors.red,
+                            width: 1.5,
+                          ),
                         ),
                         focusedErrorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Colors.red, width: 2),
+                          borderSide: const BorderSide(
+                            color: Colors.red,
+                            width: 2,
+                          ),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
@@ -230,9 +237,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         return null;
                       },
                     ),
-                    
+
                     const SizedBox(height: 40),
-                    
+
                     // Submit button
                     SizedBox(
                       width: double.infinity,
@@ -255,16 +262,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Back to login link
                     Center(
                       child: TextButton(
                         onPressed: () {
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => const LoginScreen()),
+                            MaterialPageRoute(
+                              builder: (context) => const LoginScreen(),
+                            ),
                           );
                         },
                         child: const Row(
@@ -287,7 +296,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 20),
                   ],
                 ),
@@ -299,4 +308,3 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 }
-
