@@ -8,6 +8,8 @@ import 'screens/image_upload_screen.dart';
 import 'screens/learn_screen.dart';
 import 'screens/text_input_screen.dart';
 import 'screens/analyze_screen.dart';
+import 'screens/previous_inquiries_screen.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -33,7 +35,13 @@ class MyApp extends StatelessWidget {
         '/learn': (context) => const LearnScreen(),
         '/text_input': (context) => const TextInputScreen(),
         '/analyze': (context) => const AnalyzeScreen(),
+        '/previous_inquiries': (context) => const PreviousInquiriesScreen(),
       },
     );
   }
 }
+
+// Important Note //
+/*
+he InquiryDetailsScreen is NOT to be added to the routes
+ */
