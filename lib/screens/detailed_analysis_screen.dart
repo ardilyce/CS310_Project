@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'app_utility.dart';
+import 'utility_class.dart';
 
 // Model class
 class AnalysisItem {
@@ -201,4 +201,5 @@ class DetailedAnalysisScreen extends StatelessWidget {
       ),
     );
   }
+
 }
