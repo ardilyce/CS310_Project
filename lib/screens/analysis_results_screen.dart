@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'app_utility.dart';
+import 'utility_class.dart';
 
 class AnalysisResultsScreen extends StatelessWidget {
   // We hardcode the score here for the demo, you can change it to test different colors
@@ -154,4 +154,5 @@ class AnalysisResultsScreen extends StatelessWidget {
       ),
     );
   }
+
 }
