@@ -182,11 +182,7 @@ class HomeScreen extends StatelessWidget {
           ),
           IconButton(
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Settings coming soon'),
-                ),
-              );
+              Navigator.pushNamed(context, '/settings');
             },
             icon: const Icon(Icons.settings, color: Colors.white),
             iconSize: iconSize,
