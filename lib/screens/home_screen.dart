@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'previous_inquiries_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -161,11 +162,12 @@ class HomeScreen extends StatelessWidget {
         children: [
           IconButton(
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Activity coming soon'),
-                ),
-              );
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const PreviousInquiriesScreen(),
+              ),
+            );
             },
             icon: const Icon(Icons.access_time, color: Colors.white),
             iconSize: iconSize,
