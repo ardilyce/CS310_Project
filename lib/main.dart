@@ -9,7 +9,7 @@ import 'screens/learn_screen.dart';
 import 'screens/text_input_screen.dart';
 import 'screens/analyze_screen.dart';
 import 'screens/previous_inquiries_screen.dart';
-
+import 'screens/settings_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
         '/text_input': (context) => const TextInputScreen(),
         '/analyze': (context) => const AnalyzeScreen(),
         '/previous_inquiries': (context) => const PreviousInquiriesScreen(),
+        '/settings': (context) => const SettingsScreen(),
       },
     );
   }
