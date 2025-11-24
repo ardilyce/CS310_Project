@@ -3,6 +3,7 @@ import 'utility_class.dart';
 
 class AnalysisResultsScreen extends StatelessWidget {
   // We hardcode the score here for the demo, you can change it to test different colors
+  const AnalysisResultsScreen({super.key});
   final int score = 70;
 
   @override
@@ -23,7 +24,7 @@ class AnalysisResultsScreen extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            print("Back pressed"); 
+            Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
           },
         ),
       ),
@@ -137,7 +138,7 @@ class AnalysisResultsScreen extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/detailed_analysis');
+                  Navigator.pushNamed(context, '/details');
                 },
                 child: Text(
                   "Detailed Analysis",
