@@ -1,7 +1,23 @@
 import 'package:flutter/material.dart';
 
-class AnalyzeScreen extends StatelessWidget {
+class AnalyzeScreen extends StatefulWidget {
   const AnalyzeScreen({super.key});
+
+  @override
+  State<AnalyzeScreen> createState() => _AnalyzeScreenState();
+}
+
+class _AnalyzeScreenState extends State<AnalyzeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Wait for 1 second and navigate to the analysis results screen
+    Future.delayed(const Duration(seconds: 1), () {
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/results');
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
