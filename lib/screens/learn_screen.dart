@@ -17,8 +17,7 @@ class LearnScreen extends StatelessWidget {
     ),
     _Tip(
       title: '3. SMS / WhatsApp Scams',
-      description:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     ),
     _Tip(
       title: '5. Impersonation',
@@ -53,10 +52,7 @@ class LearnScreen extends StatelessWidget {
               ),
             ),
             SizedBox(width: 8),
-            Icon(
-              Icons.lightbulb_outline,
-              color: AppUtility.textWhite,
-            )
+            Icon(Icons.lightbulb_outline, color: AppUtility.textWhite),
           ],
         ),
         centerTitle: true,
@@ -76,8 +72,11 @@ class LearnScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            ..._tips.map(
-              (tip) => Padding(
+            ..._tips.asMap().entries.map((entry) {
+              final index = entry.key;
+              final tip = entry.value;
+
+              return Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: Container(
                   padding: const EdgeInsets.all(18),
@@ -105,11 +104,23 @@ class LearnScreen extends StatelessWidget {
                           height: 1.4,
                         ),
                       ),
+
+                      // 👇 Only show image in first tip
+                      if (index == 0) ...[
+                        const SizedBox(height: 12),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            "https://timely-benefit-e63d540317.media.strapiapp.com/sample_phishing_email_includes_an_unusual_sender_email_address_90ef8c4234.jpg",
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
-              ),
-            ),
+              );
+            }),
           ],
         ),
       ),
