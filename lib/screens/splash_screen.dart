@@ -50,7 +50,7 @@ class _SplashScreenState extends State<SplashScreen> {
             const Text(
               "PhishGuard",
               style: TextStyle(
-                color: AppUtility.background,
+                color: AppUtility.textWhite,
                 fontSize: 38,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1,
@@ -63,7 +63,7 @@ class _SplashScreenState extends State<SplashScreen> {
             const Text(
               "Detect scams before they catch you.",
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white70, fontSize: 18),
+              style: TextStyle(color: AppUtility.textLight, fontSize: 18),
             ),
 
             const Spacer(),
@@ -73,7 +73,7 @@ class _SplashScreenState extends State<SplashScreen> {
               padding: EdgeInsets.only(bottom: 40),
               child: Text(
                 "CS310 Project – Sabancı University",
-                style: TextStyle(color: Colors.white54, fontSize: 16),
+                style: TextStyle(color: AppUtility.textLight2, fontSize: 16),
               ),
             ),
           ],
