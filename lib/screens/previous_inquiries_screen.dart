@@ -338,14 +338,42 @@ class _PreviousInquiriesScreenState extends State<PreviousInquiriesScreen> {
     List<Widget> cards = [];
     for (int i = 0; i < pageInquiries.length; i++) {
       Inquiry inquiry = pageInquiries[i];
+
+      // ==== Delete Using Card ====
       cards.add(
-        InquiryCard(
-          inquiry: inquiry,
-          onTap: () {
-            _navigateToDetails(inquiry);
+        Dismissible(
+          key: ValueKey(inquiry.id),
+          direction: DismissDirection.endToStart,
+          background: Container(
+            color: AppUtility.riskRed,
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.only(right: 16),
+            child: const Icon(Icons.delete, color: Colors.white),
+          ),
+          onDismissed: (direction) {
+            setState(() {
+              _inquiries.remove(inquiry);
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Inquiry deleted'),
+              ),
+            );
           },
+          child: Card(
+            // simple Card wrapper; InquiryCard still uses its own padding/margin
+            margin: EdgeInsets.zero,
+            elevation: 2,
+            child: InquiryCard(
+              inquiry: inquiry,
+              onTap: () {
+                _navigateToDetails(inquiry);
+              },
+            ),
+          ),
         ),
       );
+      // ===============================================================
     }
 
     return Column(
