@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import "utility_class.dart";
 import 'login_screen.dart';
 
 class ImageUploadScreen extends StatefulWidget {
@@ -32,10 +33,10 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0A4DBA),
+        backgroundColor: AppUtility.primaryBlue,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: AppUtility.textWhite),
           onPressed: () {
             // Navigate back to Login screen
             Navigator.pushReplacementNamed(context, '/login');
@@ -45,7 +46,7 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
         title: const Text(
           "Image Upload",
           style: TextStyle(
-            color: Colors.white,
+            color: AppUtility.textWhite,
             fontWeight: FontWeight.w600,
             fontSize: 18,
           ),
@@ -75,7 +76,7 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
                           children: const [
                             Icon(
                               Icons.camera_alt,
-                              color: Color(0xFF0A4DBA),
+                              color: AppUtility.primaryBlue,
                               size: 45,
                             ),
                             SizedBox(height: 16),
@@ -91,7 +92,7 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
                             Text(
                               "Supported formats: JPG, PNG",
                               style: TextStyle(
-                                color: Colors.grey,
+                                color: AppUtility.textGrey,
                                 fontSize: 14,
                               ),
                             ),
@@ -120,7 +121,7 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
                   // analyze logic
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF0A4DBA),
+                  backgroundColor: AppUtility.primaryBlue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -128,7 +129,7 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
                 child: const Text(
                   "Analyze Image",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppUtility.textWhite,
                     fontSize: 17,
                     fontWeight: FontWeight.w600,
                   ),
@@ -152,7 +153,7 @@ class _DashedBorderPainter extends CustomPainter {
     double dashSpace = 6;
 
     final paint = Paint()
-      ..color = const Color(0xFF0A4DBA)
+      ..color = AppUtility.primaryBlue
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 
