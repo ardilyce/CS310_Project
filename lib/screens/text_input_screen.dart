@@ -14,17 +14,78 @@ class TextInputScreen extends StatefulWidget {
 class _TextInputScreenState extends State<TextInputScreen> {
   final TextEditingController _textController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  OverlayEntry? _errorOverlay;
 
   @override
   void dispose() {
     _textController.dispose();
     _focusNode.dispose();
+    _errorOverlay?.remove();
     super.dispose();
   }
 
   // This method will be called when the user taps the dashed box.
   void _handleTapToEnterText() {
     FocusScope.of(context).requestFocus(_focusNode);
+  }
+
+  void _showTopError(String message) {
+    // Remove existing overlay if present
+    if (_errorOverlay != null) {
+      _errorOverlay!.remove();
+      _errorOverlay = null;
+    }
+
+    final overlay = Overlay.of(context);
+    _errorOverlay = OverlayEntry(
+      builder: (context) => Positioned(
+        top: MediaQuery.of(context).padding.top + 10, // Just below status bar
+        left: 20,
+        right: 20,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.red,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 10,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.error_outline, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    message,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    overlay.insert(_errorOverlay!);
+
+    // Remove after 3 seconds
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted && _errorOverlay != null) {
+        _errorOverlay!.remove();
+        _errorOverlay = null;
+      }
+    });
   }
 
   @override
@@ -99,6 +160,10 @@ class _TextInputScreenState extends State<TextInputScreen> {
               height: 55,
               child: ElevatedButton(
                 onPressed: () {
+                  if (_textController.text.trim().isEmpty) {
+                    _showTopError("Please enter some text first.");
+                    return;
+                  }
                   // TODO: analyze from text logic
                   Navigator.pushNamed(context, '/analyze');
                 },
