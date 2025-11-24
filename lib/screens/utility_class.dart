@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class AppUtility {
   static const Color primaryBlue = Color(0xFF0055AA);
   static const Color secondaryBlue = Color(0xFFC5E2FF);
+  static const Color thirdBlue = Color(0xFF022047);
   static const Color textDark = Color(0xFF333333);
   static const Color textLight = Colors.white70;
   static const Color textLight2 = Colors.white54;
@@ -28,4 +29,3 @@ class AppUtility {
     return "high risk";
   }
 }
-
