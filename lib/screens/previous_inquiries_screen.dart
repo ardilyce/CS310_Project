@@ -6,14 +6,6 @@ import 'utility_class.dart';
 enum SortType { date, score }
 
 
-//TODO
-// Rather than hard coding colors dynamically fetch from utility_class
-/*
-* Colors are hard coded to match with the utilitiy_class colors
-* If colors were to change need an update
- */
-
-
 const EdgeInsets cardPadding = EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0);
 
 class InquiryCard extends StatelessWidget {
@@ -47,7 +39,7 @@ class InquiryCard extends StatelessWidget {
         margin: cardPadding, // using the const from above (could just hardcode)
         padding: const EdgeInsets.all(12.0),
         decoration: BoxDecoration(
-          color: const Color(0xFFC5E2FF),
+          color: AppUtility.secondaryBlue,
           borderRadius: BorderRadius.circular(8.0),
         ),
         child: Row(
@@ -119,13 +111,13 @@ class InquiryCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: scoreColor,
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2),
+                border: Border.all(color: AppUtility.textWhite, width: 2),
               ),
               alignment: Alignment.center,
               child: Text(
                 inquiry.score.toString(),
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: AppUtility.textWhite,
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
                 ),
@@ -159,10 +151,10 @@ class InquiryDetailsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           '# Inquiry ID',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: AppUtility.textWhite),
         ),
-        backgroundColor:Color(0xFF0055AA),
-        iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor:AppUtility.primaryBlue,
+        iconTheme: IconThemeData(color: AppUtility.textWhite),
       ),
       body: Stack(
         children: [
@@ -208,7 +200,7 @@ class InquiryDetailsScreen extends StatelessWidget {
                         child: Text(
                           inquiry.score.toString(),
                           style: TextStyle(
-                            color: Colors.white,
+                            color: AppUtility.textWhite,
                             fontWeight: FontWeight.bold,
                             fontSize: 30,
                           ),
@@ -254,14 +246,14 @@ class InquiryDetailsScreen extends StatelessWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
-                  backgroundColor: const Color(0xFF0055AA),
+                  backgroundColor: AppUtility.primaryBlue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                 ),
                 child: const Text(
                   'Analyze Again',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
+                  style: TextStyle(fontSize: 18, color: AppUtility.textWhite),
                 ),
               ),
             ),
@@ -348,7 +340,7 @@ class _PreviousInquiriesScreenState extends State<PreviousInquiriesScreen> {
             color: AppUtility.riskRed,
             alignment: Alignment.centerRight,
             padding: const EdgeInsets.only(right: 16),
-            child: const Icon(Icons.delete, color: Colors.white),
+            child: const Icon(Icons.delete, color:AppUtility.textWhite),
           ),
           onDismissed: (direction) {
             setState(() {
@@ -413,10 +405,10 @@ class _PreviousInquiriesScreenState extends State<PreviousInquiriesScreen> {
       appBar: AppBar(
         title: const Text(
           'Previous Inquiries',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: AppUtility.textWhite),
         ),
-        backgroundColor: const Color(0xFF0055AA),
-        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: AppUtility.primaryBlue,
+        iconTheme: const IconThemeData(color: AppUtility.textWhite),
       ),
       body: Column(
         children: [
@@ -482,8 +474,8 @@ class _PreviousInquiriesScreenState extends State<PreviousInquiriesScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: isActive
-                        ? const Color(0xFF1E88E5)
-                        : Colors.grey.shade400,
+                        ? AppUtility.primaryBlue
+                        : AppUtility.textGrey,
                   ),
                 );
               }),
