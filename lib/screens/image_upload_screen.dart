@@ -26,6 +26,65 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
     }
   }
 
+  OverlayEntry? _errorOverlay;
+
+  void _showTopError(String message) {
+    if (_errorOverlay != null) {
+      _errorOverlay!.remove();
+      _errorOverlay = null;
+    }
+
+    final overlay = Overlay.of(context);
+    _errorOverlay = OverlayEntry(
+      builder: (context) => Positioned(
+        top: MediaQuery.of(context).padding.top + 10,
+        left: 20,
+        right: 20,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: AppUtility.riskRed,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 10,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.error_outline, color: AppUtility.textWhite),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    message,
+                    style: const TextStyle(
+                      color: AppUtility.textWhite,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    overlay.insert(_errorOverlay!);
+
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted && _errorOverlay != null) {
+        _errorOverlay!.remove();
+        _errorOverlay = null;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // DEVICE GENİŞLİĞİ (kare yapmak için lazım)
@@ -119,8 +178,14 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
               height: 55,
               child: ElevatedButton(
                 onPressed: () {
+                  if (_selectedImage == null) {
+                    _showTopError("Please upload an image first.");
+                    return;
+                  }
+
                   Navigator.pushNamed(context, "/analyze");
                 },
+
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppUtility.primaryBlue,
                   shape: RoundedRectangleBorder(
