@@ -38,8 +38,8 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppUtility.textWhite),
           onPressed: () {
-            // Navigate back to Login screen
-            Navigator.pushReplacementNamed(context, '/login');
+            // Navigate back to home screen
+            Navigator.pushReplacementNamed(context, '/home');
           },
         ),
         centerTitle: true,
