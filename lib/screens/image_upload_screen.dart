@@ -32,6 +32,7 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
     double size = MediaQuery.of(context).size.width - 48;
 
     return Scaffold(
+      backgroundColor: AppUtility.background,
       appBar: AppBar(
         backgroundColor: AppUtility.primaryBlue,
         elevation: 0,
