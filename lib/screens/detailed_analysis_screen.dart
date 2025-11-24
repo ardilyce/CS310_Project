@@ -37,6 +37,12 @@ class DetailedAnalysisScreen extends StatelessWidget {
         centerTitle: true,
         backgroundColor: AppUtility.primaryBlue,
         foregroundColor: Colors.white,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: Column(
         children: [
@@ -183,7 +189,7 @@ class DetailedAnalysisScreen extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppUtility.primaryBlue,
                     ),
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => Navigator.pushNamed(context, '/previous_inquiries'),
                     child: Text(
                       "See Previous Results",
                       style: TextStyle(
