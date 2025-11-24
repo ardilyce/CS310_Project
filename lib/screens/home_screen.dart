@@ -17,7 +17,10 @@ class HomeScreen extends StatelessWidget {
             _buildHeader(),
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 32,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -40,13 +43,11 @@ class HomeScreen extends StatelessWidget {
                     _DashboardButton(
                       icon: Icons.photo_camera_outlined,
                       label: 'Scan\nPhoto',
-                      onTap: () => Navigator.pushNamed(context, '/image_upload'),
+                      onTap: () =>
+                          Navigator.pushNamed(context, '/image_upload'),
                     ),
                     const SizedBox(height: 32),
-                    Divider(
-                      color: _primaryBlue.withOpacity(0.4),
-                      thickness: 4,
-                    ),
+                    Divider(color: _primaryBlue.withOpacity(0.4), thickness: 4),
                     const SizedBox(height: 24),
                     GestureDetector(
                       onTap: () => Navigator.pushNamed(context, '/learn'),
@@ -87,10 +88,7 @@ class HomeScreen extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            Icon(
-                              Icons.chevron_right,
-                              color: _primaryBlue,
-                            )
+                            Icon(Icons.chevron_right, color: _primaryBlue),
                           ],
                         ),
                       ),
@@ -117,19 +115,7 @@ class HomeScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.shield_outlined,
-                  color: _primaryBlue,
-                  size: 28,
-                ),
-              ),
+              Image.asset("assets/images/logo.png", width: 44, height: 44),
               const SizedBox(width: 16),
               const Text(
                 'PhishGuard',
@@ -162,12 +148,12 @@ class HomeScreen extends StatelessWidget {
         children: [
           IconButton(
             onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const PreviousInquiriesScreen(),
-              ),
-            );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PreviousInquiriesScreen(),
+                ),
+              );
             },
             icon: const Icon(Icons.access_time, color: Colors.white),
             iconSize: iconSize,
