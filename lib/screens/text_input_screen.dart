@@ -1,6 +1,6 @@
 import 'dart:ui' as ui; // Needed for the Painter
 import 'package:flutter/material.dart';
-
+import 'utility_class.dart';
 import 'analyze_screen.dart';
 
 // This is the new screen you asked for, based on your image.
@@ -47,7 +47,7 @@ class _TextInputScreenState extends State<TextInputScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.red,
+              color: AppUtility.riskRed,
               borderRadius: BorderRadius.circular(12),
               boxShadow: const [
                 BoxShadow(
@@ -59,13 +59,13 @@ class _TextInputScreenState extends State<TextInputScreen> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.error_outline, color: Colors.white),
+                const Icon(Icons.error_outline, color: AppUtility.textWhite),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     message,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: AppUtility.textWhite,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -95,10 +95,10 @@ class _TextInputScreenState extends State<TextInputScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0A4DBA), // Style from your example
+        backgroundColor: AppUtility.primaryBlue, // Style from your example
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: AppUtility.textWhite),
           onPressed: () {
             // A standard back button action
             Navigator.pop(context);
@@ -108,7 +108,7 @@ class _TextInputScreenState extends State<TextInputScreen> {
         title: const Text(
           "Input Text", // Title from your image
           style: TextStyle(
-            color: Colors.white,
+            color: AppUtility.textWhite,
             fontWeight: FontWeight.w600,
             fontSize: 18,
           ),
@@ -144,7 +144,7 @@ class _TextInputScreenState extends State<TextInputScreen> {
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
-                        color: Colors.black,
+                        color: AppUtility.textDark,
                       ),
                       maxLines: null,
                     ),
@@ -168,7 +168,7 @@ class _TextInputScreenState extends State<TextInputScreen> {
                   Navigator.pushNamed(context, '/analyze');
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF0A4DBA),
+                  backgroundColor: AppUtility.primaryBlue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -176,7 +176,7 @@ class _TextInputScreenState extends State<TextInputScreen> {
                 child: const Text(
                   "Analyze From Text", // Text from your image
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppUtility.textWhite,
                     fontSize: 17,
                     fontWeight: FontWeight.w600,
                   ),
@@ -201,7 +201,7 @@ class _DashedBorderPainter extends CustomPainter {
     double dashSpace = 6;
 
     final paint = Paint()
-      ..color = const Color(0xFF0A4DBA)
+      ..color = AppUtility.primaryBlue
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'utility_class.dart';
 
 class AnalyzeScreen extends StatefulWidget {
   const AnalyzeScreen({super.key});
@@ -27,8 +28,8 @@ class _AnalyzeScreenState extends State<AnalyzeScreen> {
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color(0xFF022047), // dark blue
-              Color(0xFF0A4DBA), // light blue
+              AppUtility.thirdBlue, // dark blue
+              AppUtility.primaryBlue, // light blue
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -50,7 +51,7 @@ class _AnalyzeScreenState extends State<AnalyzeScreen> {
               const Text(
                 "Analyzing...",
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppUtility.textWhite,
                   fontSize: 22,
                   fontWeight: FontWeight.w600,
                 ),
@@ -60,7 +61,7 @@ class _AnalyzeScreenState extends State<AnalyzeScreen> {
 
               // The circular loading indicator
               const CircularProgressIndicator(
-                color: Colors.white,
+                color: AppUtility.textWhite,
                 strokeWidth: 5, // Make the line a bit thicker
               ),
             ],
