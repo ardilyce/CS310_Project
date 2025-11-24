@@ -1,31 +1,32 @@
 import 'package:flutter/material.dart';
+import 'utility_class.dart';
 
 class LearnScreen extends StatelessWidget {
   const LearnScreen({super.key});
 
   static final List<_Tip> _tips = [
     _Tip(
-      title: 'How to Spot a Phishing Email',
+      title: '1. How to Spot a Phishing Email',
       description:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere.... --> more',
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere.',
     ),
     _Tip(
-      title: 'Email Scams',
+      title: '2. Email Scams',
       description:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere.... --> more',
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere.',
     ),
     _Tip(
-      title: 'SMS / WhatsApp Scams',
+      title: '3. SMS / WhatsApp Scams',
       description:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere.... --> more',
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     ),
     _Tip(
-      title: 'Impersonation',
+      title: '5. Impersonation',
       description:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere.... --> more',
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sit amet ligula et nunc faucibus porta.',
     ),
     _Tip(
-      title: 'Dangerous Websites',
+      title: '6. Dangerous Websites',
       description:
           'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sit amet ligula et nunc faucibus porta. Vivamus eget quam nec arcu facilisis suscipit non ac lacus. Curabitur id lorem ut est gravida feugiat sed vel elit.',
     ),
@@ -35,10 +36,10 @@ class LearnScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0A4DBA),
+        backgroundColor: AppUtility.primaryBlue,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: AppUtility.textWhite),
           onPressed: () => Navigator.pop(context),
         ),
         title: Row(
@@ -48,19 +49,20 @@ class LearnScreen extends StatelessWidget {
               'Tips and Lessons',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
+                color: AppUtility.textWhite,
               ),
             ),
             SizedBox(width: 8),
             Icon(
               Icons.lightbulb_outline,
-              color: Colors.white,
+              color: AppUtility.textWhite,
             )
           ],
         ),
         centerTitle: true,
       ),
       body: Container(
-        color: Colors.white,
+        color: AppUtility.background,
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
           children: [
@@ -70,6 +72,7 @@ class LearnScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.w700,
+                color: AppUtility.textDark,
               ),
             ),
             const SizedBox(height: 24),
@@ -79,7 +82,7 @@ class LearnScreen extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFDFECFF),
+                    color: AppUtility.secondaryBlue,
                     borderRadius: BorderRadius.circular(18),
                   ),
                   child: Column(
@@ -90,7 +93,7 @@ class LearnScreen extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
-                          color: Colors.black87,
+                          color: AppUtility.textDark,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -98,7 +101,7 @@ class LearnScreen extends StatelessWidget {
                         tip.description,
                         style: const TextStyle(
                           fontSize: 14,
-                          color: Colors.black87,
+                          color: AppUtility.textDark,
                           height: 1.4,
                         ),
                       ),
