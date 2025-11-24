@@ -9,6 +9,7 @@ class AppUtility {
   static const Color textLight = Colors.white70;
   static const Color textLight2 = Colors.white54;
   static const Color background = Colors.white;
+  static const Color textGray = Colors.grey;
 
   // Dynamic Risk Colors
   static const Color riskGreen = Color(0xFF6BCD36); // 0-25
