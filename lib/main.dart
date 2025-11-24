@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
         '/previous_inquiries': (context) => const PreviousInquiriesScreen(),
         '/settings': (context) => const SettingsScreen(),
         '/results': (context) => const AnalysisResultsScreen(),
-        '/details': (context) => const DetailedAnalysisScreen(),
+        '/details': (context) => DetailedAnalysisScreen(),
       },
     );
   }
