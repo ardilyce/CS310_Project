@@ -1,29 +1,19 @@
 import 'package:flutter/material.dart';
 import '../models/inquiry.dart';
+import 'utility_class.dart';
+
 
 enum SortType { date, score }
 
-// this just gives a color, kind of messy but works
-Color getScoreColor(int score) {
-  Color c = const Color(0xFF6BCD36);
 
-  if (score >= 20 && score < 50) {
-    c = const Color(0xFFDABC44);
-  }
-  if (score >= 50 && score < 80) {
-    c = const Color(0xFFD96938);
-  }
-  if (score >= 80) {
-    c = const Color(0xFFA12325);
-  }
-  if (score < 20) {
-    c = const Color(0xFF6BCD36);
-  }
+//TODO
+// Rather than hard coding colors dynamically fetch from utility_class
+/*
+* Colors are hard coded to match with the utilitiy_class colors
+* If colors were to change need an update
+ */
 
-  return c;
-}
 
-// probably used for something
 const EdgeInsets cardPadding = EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0);
 
 class InquiryCard extends StatelessWidget {
@@ -41,7 +31,7 @@ class InquiryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // getting the color for the score
-    Color scoreColor = getScoreColor(inquiry.score);
+    Color scoreColor = AppUtility.getColorForScore(inquiry.score);
 
     String textToShow;
     if (inquiry.message == null) {
@@ -156,7 +146,7 @@ class InquiryDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // reusing same function as card
-    Color scoreColor = getScoreColor(inquiry.score);
+    Color scoreColor = AppUtility.getColorForScore(inquiry.score);
 
     String fullMessage;
     if (inquiry.message == null) {
