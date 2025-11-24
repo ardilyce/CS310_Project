@@ -119,7 +119,7 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
               height: 55,
               child: ElevatedButton(
                 onPressed: () {
-                  // analyze logic
+                  Navigator.pushNamed(context, "/analyze");
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppUtility.primaryBlue,
