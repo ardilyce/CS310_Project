@@ -32,10 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
           gradient: LinearGradient(
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
-            colors: [
-              Color(0xFF022047), // dark blue
-              Color(0xFF0A4DBA), // light blue
-            ],
+            colors: [AppUtility.secondaryBlue, AppUtility.primaryBlue],
           ),
         ),
 
@@ -53,7 +50,7 @@ class _SplashScreenState extends State<SplashScreen> {
             const Text(
               "PhishGuard",
               style: TextStyle(
-                color: Colors.white,
+                color: AppUtility.background,
                 fontSize: 38,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1,

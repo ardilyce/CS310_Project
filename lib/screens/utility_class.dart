@@ -4,6 +4,7 @@ class AppUtility {
   static const Color primaryBlue = Color(0xFF0A4DBA);
   static const Color secondaryBlue = Color(0xFF022047);
   static const Color textDark = Color(0xFF333333);
+  static const Color textLight = Colors.white70;
   static const Color background = Colors.white;
 
   // Dynamic Risk Colors
