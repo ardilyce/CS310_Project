@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -282,36 +284,92 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       const SizedBox(height: 24),
 
-                      // Login button
-                      SizedBox(
-                        width: double.infinity,
-                        height: 55,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // Validate form before navigation
-                            if (_formKey.currentState!.validate()) {
-                              // If form is valid, navigate to the  home screen
-                              Navigator.pushReplacementNamed(
-                                context,
-                                '/home',
-                              );
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF001B3D),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                      // Error message display
+                      if (Provider.of<AuthProvider>(context, listen: false).errorMessage != null)
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.red, width: 1),
                           ),
-                          child: const Text(
-                            "Login",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                            ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.error_outline, color: Colors.red, size: 20),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  Provider.of<AuthProvider>(context, listen: false).errorMessage ?? '',
+                                  style: const TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.close, color: Colors.red, size: 18),
+                                onPressed: () {
+                                  Provider.of<AuthProvider>(context, listen: false).clearError();
+                                },
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                              ),
+                            ],
                           ),
                         ),
+
+                      // Login button
+                      Consumer<AuthProvider>(
+                        builder: (context, authProvider, child) {
+                          return SizedBox(
+                            width: double.infinity,
+                            height: 55,
+                            child: ElevatedButton(
+                              onPressed: authProvider.isLoading
+                                  ? null
+                                  : () async {
+                                      if (_formKey.currentState!.validate()) {
+                                        bool success = await authProvider.signIn(
+                                          email: _emailController.text,
+                                          password: _passwordController.text,
+                                        );
+
+                                        if (success && context.mounted) {
+                                          Navigator.pushReplacementNamed(
+                                            context,
+                                            '/home',
+                                          );
+                                        }
+                                      }
+                                    },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF001B3D),
+                                disabledBackgroundColor: Colors.grey,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: authProvider.isLoading
+                                  ? const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                      ),
+                                    )
+                                  : const Text(
+                                      "Login",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                            ),
+                          );
+                        },
                       ),
 
                       const SizedBox(height: 20),

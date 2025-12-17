@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "984406170734",
+    "project_id": "phishguard-app-cs310",
+    "storage_bucket": "phishguard-app-cs310.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:984406170734:android:f3464867c06f3f16941a7f",
+        "android_client_info": {
+          "package_name": "com.example.project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCINSNS3p0G9r3J47IRo82kYV8NJq3iwho"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

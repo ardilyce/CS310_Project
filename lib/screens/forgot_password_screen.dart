@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import 'login_screen.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -19,57 +21,63 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.dispose();
   }
 
-  void _submitEmail() {
+  Future<void> _submitEmail() async {
     if (_formKey.currentState!.validate()) {
-      // Show success message
-      setState(() {
-        _emailSent = true;
-      });
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      
+      bool success = await authProvider.resetPassword(_emailController.text);
+      
+      if (success && mounted) {
+        // Show success message
+        setState(() {
+          _emailSent = true;
+        });
 
-      // Show success dialog
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            backgroundColor: const Color(0xFF022047),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: const Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.green, size: 28),
-                SizedBox(width: 12),
-                Text(
-                  "Email Sent!",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+        // Show success dialog
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              backgroundColor: const Color(0xFF022047),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: const Row(
+                children: [
+                  Icon(Icons.check_circle, color: Colors.green, size: 28),
+                  SizedBox(width: 12),
+                  Text(
+                    "Email Sent!",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              content: Text(
+                "A password reset link has been sent to ${_emailController.text}. Please check your inbox.",
+                style: const TextStyle(color: Colors.white70, fontSize: 16),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close dialog
+                    Navigator.pushReplacementNamed(context, '/login');
+                  },
+                  child: const Text(
+                    "Back to Login",
+                    style: TextStyle(
+                      color: Color(0xFF0A4DBA),
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
-            ),
-            content: Text(
-              "A password reset link has been sent to ${_emailController.text}. Please check your inbox.",
-              style: const TextStyle(color: Colors.white70, fontSize: 16),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Close dialog
-                  Navigator.pushReplacementNamed(context, '/login');
-                },
-                child: const Text(
-                  "Back to Login",
-                  style: TextStyle(
-                    color: Color(0xFF0A4DBA),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-      );
+            );
+          },
+        );
+      }
     }
   }
 
@@ -240,27 +248,82 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
                     const SizedBox(height: 40),
 
+                    // Error message display
+                    Consumer<AuthProvider>(
+                      builder: (context, authProvider, child) {
+                        if (authProvider.errorMessage == null) {
+                          return const SizedBox.shrink();
+                        }
+                        return Container(
+                          padding: const EdgeInsets.all(12),
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.red, width: 1),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.error_outline, color: Colors.red, size: 20),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  authProvider.errorMessage ?? '',
+                                  style: const TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.close, color: Colors.red, size: 18),
+                                onPressed: () {
+                                  authProvider.clearError();
+                                },
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+
                     // Submit button
-                    SizedBox(
-                      width: double.infinity,
-                      height: 55,
-                      child: ElevatedButton(
-                        onPressed: _submitEmail,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF001B3D),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                    Consumer<AuthProvider>(
+                      builder: (context, authProvider, child) {
+                        return SizedBox(
+                          width: double.infinity,
+                          height: 55,
+                          child: ElevatedButton(
+                            onPressed: authProvider.isLoading ? null : _submitEmail,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF001B3D),
+                              disabledBackgroundColor: Colors.grey,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: authProvider.isLoading
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    ),
+                                  )
+                                : const Text(
+                                    "Send Reset Link",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
                           ),
-                        ),
-                        child: const Text(
-                          "Send Reset Link",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
 
                     const SizedBox(height: 24),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import "utility_class.dart";
 
 class SplashScreen extends StatefulWidget {
@@ -12,11 +14,22 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Navigate to Login Screen after 3 seconds
+    // Check authentication state and navigate accordingly
+    _checkAuthAndNavigate();
+  }
 
+  void _checkAuthAndNavigate() {
     Future.delayed(const Duration(seconds: 2), () {
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, '/login');
+      
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      
+      // Navigate based on authentication state
+      if (authProvider.isAuthenticated) {
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        Navigator.pushReplacementNamed(context, '/login');
+      }
     });
   }
 

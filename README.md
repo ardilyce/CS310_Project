@@ -58,6 +58,33 @@ To contribute to or run this project, you will need the following software insta
 * An editor like VS Code or Android Studio.
 * A configured Firebase project to connect with the application.
 
+## Ekip Kurulumu
+
+**Önemli:** Bu proje 6 kişilik bir ekip tarafından geliştirilmektedir. Her ekip üyesinin kendi Firebase projesini kullanması gerekmektedir.
+
+Detaylı kurulum talimatları için **[TEAM_SETUP.md](TEAM_SETUP.md)** dosyasına bakın.
+
+### Hızlı Başlangıç
+
+1. Projeyi klonlayın ve bağımlılıkları yükleyin:
+   ```bash
+   git clone <repository-url>
+   cd CS310_Project/CS310_Project
+   flutter pub get
+   ```
+
+2. Firebase projenizi oluşturun ve bağlayın:
+   ```bash
+   dart pub global run flutterfire_cli:flutterfire configure
+   ```
+
+3. Uygulamayı çalıştırın:
+   ```bash
+   flutter run
+   ```
+
+**Not:** `firebase_options.dart` dosyası Git'e commit edilmez. Her ekip üyesi kendi dosyasını oluşturmalıdır.
+
 ---
 
 # Methodology  

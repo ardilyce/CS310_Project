@@ -20,3 +20,14 @@ pubspec.lock
 # Flutter generated
 .flutter-plugins
 .flutter-plugins-dependencies
+
+# Environment variables (herkes kendi .env.local dosyasını oluşturur)
+.env.local
+.env
+
+# Firebase configuration - ORTAK PROJE KULLANILIYOR, commit edilmeli
+# lib/utils/firebase_options.dart - Artık ignore edilmiyor (ortak proje)
+
+# Firebase config files - ORTAK PROJE KULLANILIYOR, commit edilmeli
+# android/app/google-services.json - Artık ignore edilmiyor (ortak proje)
+# ios/Runner/GoogleService-Info.plist - iOS için gerekirse commit edilebilir
