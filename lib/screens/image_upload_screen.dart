@@ -183,7 +183,7 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
                     return;
                   }
 
-                  Navigator.pushNamed(context, "/analyze");
+                  Navigator.pushNamed(context, "/extracted_text");
                 },
 
                 style: ElevatedButton.styleFrom(
