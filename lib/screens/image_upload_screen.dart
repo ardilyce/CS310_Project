@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import "utility_class.dart";
 import 'login_screen.dart';
+import '../utils/ocr_utility.dart';
 
 class ImageUploadScreen extends StatefulWidget {
   const ImageUploadScreen({super.key});
@@ -177,13 +178,21 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
               width: double.infinity,
               height: 55,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_selectedImage == null) {
                     _showTopError("Please upload an image first.");
                     return;
                   }
 
-                  Navigator.pushNamed(context, "/extracted_text");
+                  final extractedText = await OcrUtility.extractText(
+                    _selectedImage!,
+                  );
+
+                  Navigator.pushNamed(
+                    context,
+                    "/extracted_text",
+                    arguments: extractedText,
+                  );
                 },
 
                 style: ElevatedButton.styleFrom(

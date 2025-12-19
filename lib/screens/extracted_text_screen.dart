@@ -9,9 +9,21 @@ class ExtractedTextScreen extends StatefulWidget {
 }
 
 class _ExtractedTextScreenState extends State<ExtractedTextScreen> {
-  final TextEditingController _textController = TextEditingController(
-    text: "<...Extracted text that is editable by the user...>",
-  );
+  final TextEditingController _textController = TextEditingController();
+  bool _isInitialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!_isInitialized) {
+      final extractedText =
+          ModalRoute.of(context)!.settings.arguments as String;
+
+      _textController.text = extractedText;
+      _isInitialized = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
