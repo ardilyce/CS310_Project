@@ -20,7 +20,7 @@ class AnalysisResultsScreen extends StatelessWidget {
         ),
         centerTitle: true,
         backgroundColor: AppUtility.primaryBlue,
-        foregroundColor: Colors.white,
+        foregroundColor: AppUtility.textWhite,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
@@ -49,7 +49,7 @@ class AnalysisResultsScreen extends StatelessWidget {
                         value: score / 100,
                         strokeWidth: 12,
                         color: riskColor,
-                        backgroundColor: Colors.grey.shade200,
+                        backgroundColor: AppUtility.secondaryBlue,
                       ),
                     ),
                     Icon(
@@ -72,6 +72,7 @@ class AnalysisResultsScreen extends StatelessWidget {
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                         fontStyle: FontStyle.italic,
+                        color: AppUtility.textDark,
                       ),
                     ),
                     Row(
@@ -84,11 +85,15 @@ class AnalysisResultsScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 60,
                             fontWeight: FontWeight.bold,
+                            color: AppUtility.textDark,
                           ),
                         ),
                         Text(
                           "/100",
-                          style: TextStyle(fontSize: 24, color: Colors.grey),
+                          style: TextStyle(
+                            fontSize: 24,
+                            color: AppUtility.textGrey,
+                          ),
                         ),
                       ],
                     ),
@@ -122,7 +127,7 @@ class AnalysisResultsScreen extends StatelessWidget {
             Text(
               "You can view a more detailed analysis by tapping below.",
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 15, color: Colors.grey[600]),
+              style: TextStyle(fontSize: 15, color: AppUtility.textGrey),
             ),
 
             Spacer(flex: 2),
@@ -144,7 +149,7 @@ class AnalysisResultsScreen extends StatelessWidget {
                   "Detailed Analysis",
                   style: TextStyle(
                     fontSize: 18,
-                    color: Colors.white,
+                    color: AppUtility.textWhite,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

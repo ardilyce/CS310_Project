@@ -25,7 +25,7 @@ class _AnalyzeScreenState extends State<AnalyzeScreen> {
     return Scaffold(
       body: Container(
         // Using a gradient to match the background in the image
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
               AppUtility.thirdBlue, // dark blue
@@ -48,7 +48,7 @@ class _AnalyzeScreenState extends State<AnalyzeScreen> {
               const SizedBox(height: 24),
 
               // The "Analyzing..." text
-              const Text(
+              Text(
                 "Analyzing...",
                 style: TextStyle(
                   color: AppUtility.textWhite,
@@ -60,7 +60,7 @@ class _AnalyzeScreenState extends State<AnalyzeScreen> {
               const SizedBox(height: 40),
 
               // The circular loading indicator
-              const CircularProgressIndicator(
+              CircularProgressIndicator(
                 color: AppUtility.textWhite,
                 strokeWidth: 5, // Make the line a bit thicker
               ),

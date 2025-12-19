@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/theme_provider.dart';
+import 'utility_class.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -21,12 +23,51 @@ class _SettingsScreenState extends State<SettingsScreen> {
           'Settings',
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: const Color(0xFF0055AA),
+        backgroundColor: AppUtility.primaryBlue,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Column(
         children: [
           const SizedBox(height: 20),
+
+          // Dark Mode row
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              height: 60,
+              decoration: BoxDecoration(
+                color: AppUtility.secondaryBlue,
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Dark Mode',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppUtility.textDark,
+                    ),
+                  ),
+                  Consumer<ThemeProvider>(
+                    builder: (context, themeProvider, child) {
+                      return Switch(
+                        value: themeProvider.isDarkMode,
+                        activeColor: Colors.white,
+                        activeTrackColor: AppUtility.primaryBlue,
+                        onChanged: (value) {
+                          themeProvider.setDarkMode(value);
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 16),
 
           // Keep History row
           Padding(
@@ -35,23 +76,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               height: 60,
               decoration: BoxDecoration(
-                color: const Color(0xFFD6E9FF),
+                color: AppUtility.secondaryBlue,
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Keep History',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: AppUtility.textDark,
                     ),
                   ),
                   Switch(
                     value: _keepHistory,
                     activeColor: Colors.white,
-                    activeTrackColor: const Color(0xFF0055AA),
+                    activeTrackColor: AppUtility.primaryBlue,
                     onChanged: (value) {
                       setState(() {
                         _keepHistory = value;
@@ -81,16 +122,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFD6E9FF),
+                  backgroundColor: AppUtility.secondaryBlue,
                   shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   'Clear History',
                   style: TextStyle(
-                    color: Colors.black,
+                    color: AppUtility.textDark,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -145,7 +186,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             }
                           },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD6E9FF),
+                      backgroundColor: AppUtility.secondaryBlue,
                       disabledBackgroundColor: Colors.grey,
                       shadowColor: Colors.transparent,
                       shape: RoundedRectangleBorder(
@@ -160,10 +201,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               strokeWidth: 2,
                             ),
                           )
-                        : const Text(
+                        : Text(
                             'Logout',
                             style: TextStyle(
-                              color: Colors.black,
+                              color: AppUtility.textDark,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -184,11 +225,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 const Divider(),
                 const SizedBox(height: 4),
-                const Text(
+                Text(
                   'Account Settings',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.black87,
+                    color: AppUtility.textGrey,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -210,10 +251,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Delete Account',
                       style: TextStyle(
-                        color: Colors.black, // screenshot looks like black text
+                        color: AppUtility.textDark,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

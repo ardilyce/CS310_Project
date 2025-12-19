@@ -38,12 +38,12 @@ class LearnScreen extends StatelessWidget {
         backgroundColor: AppUtility.primaryBlue,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppUtility.textWhite),
+          icon: Icon(Icons.arrow_back, color: AppUtility.textWhite),
           onPressed: () => Navigator.pop(context),
         ),
         title: Row(
           mainAxisSize: MainAxisSize.min,
-          children: const [
+          children: [
             Text(
               'Tips and Lessons',
               style: TextStyle(
@@ -62,7 +62,7 @@ class LearnScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
           children: [
-            const Text(
+            Text(
               'Learn & Stay Safe',
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -89,7 +89,7 @@ class LearnScreen extends StatelessWidget {
                     children: [
                       Text(
                         tip.title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
                           color: AppUtility.textDark,
@@ -98,7 +98,7 @@ class LearnScreen extends StatelessWidget {
                       const SizedBox(height: 8),
                       Text(
                         tip.description,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           color: AppUtility.textDark,
                           height: 1.4,

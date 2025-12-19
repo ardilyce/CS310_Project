@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'previous_inquiries_screen.dart';
+import '../providers/theme_provider.dart';
 import 'utility_class.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -7,6 +9,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<ThemeProvider>();
     return Scaffold(
       backgroundColor: AppUtility.primaryBlue,
       body: SafeArea(
@@ -24,7 +27,7 @@ class HomeScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text(
+                      Text(
                         'Welcome Back',
                         textAlign: TextAlign.center,
                         style: TextStyle(
@@ -61,7 +64,7 @@ class HomeScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Row(
-                            children: const [
+                            children: [
                               Icon(
                                 Icons.lightbulb_outline,
                                 color: AppUtility.primaryBlue,
@@ -91,7 +94,10 @@ class HomeScreen extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              Icon(Icons.chevron_right, color: AppUtility.primaryBlue),
+                              Icon(
+                                Icons.chevron_right,
+                                color: AppUtility.primaryBlue,
+                              ),
                             ],
                           ),
                         ),
@@ -121,7 +127,7 @@ class HomeScreen extends StatelessWidget {
             children: [
               Image.asset("assets/images/logo.png", width: 44, height: 44),
               const SizedBox(width: 16),
-              const Text(
+              Text(
                 'PhishGuard',
                 style: TextStyle(
                   color: AppUtility.textWhite,
@@ -159,7 +165,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               );
             },
-            icon: const Icon(Icons.access_time, color: AppUtility.textWhite),
+            icon: Icon(Icons.access_time, color: AppUtility.textWhite),
             iconSize: iconSize,
           ),
           Container(
@@ -168,13 +174,14 @@ class HomeScreen extends StatelessWidget {
               color: AppUtility.background,
               borderRadius: BorderRadius.circular(30),
             ),
-            child: Icon(Icons.home, color: AppUtility.primaryBlue, size: iconSize),
+            child:
+                Icon(Icons.home, color: AppUtility.primaryBlue, size: iconSize),
           ),
           IconButton(
             onPressed: () {
               Navigator.pushNamed(context, '/settings');
             },
-            icon: const Icon(Icons.settings, color: AppUtility.textWhite),
+            icon: Icon(Icons.settings, color: AppUtility.textWhite),
             iconSize: iconSize,
           ),
         ],
@@ -212,7 +219,7 @@ class _DashboardButton extends StatelessWidget {
             Text(
               label,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
                 color: AppUtility.textDark,

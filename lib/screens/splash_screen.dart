@@ -41,7 +41,7 @@ class _SplashScreenState extends State<SplashScreen> {
         height: double.infinity,
 
         // Background gradient
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
@@ -60,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen> {
             const SizedBox(height: 30),
 
             // Title
-            const Text(
+            Text(
               "PhishGuard",
               style: TextStyle(
                 color: AppUtility.textWhite,
@@ -73,7 +73,7 @@ class _SplashScreenState extends State<SplashScreen> {
             const SizedBox(height: 12),
 
             // Subtitle
-            const Text(
+            Text(
               "Detect scams before they catch you.",
               textAlign: TextAlign.center,
               style: TextStyle(color: AppUtility.textLight, fontSize: 18),
@@ -82,7 +82,7 @@ class _SplashScreenState extends State<SplashScreen> {
             const Spacer(),
 
             // Footer
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(bottom: 40),
               child: Text(
                 "CS310 Project – Sabancı University",

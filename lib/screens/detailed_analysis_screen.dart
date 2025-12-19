@@ -36,7 +36,7 @@ class DetailedAnalysisScreen extends StatelessWidget {
         ),
         centerTitle: true,
         backgroundColor: AppUtility.primaryBlue,
-        foregroundColor: Colors.white,
+        foregroundColor: AppUtility.textWhite,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
@@ -61,7 +61,7 @@ class DetailedAnalysisScreen extends StatelessWidget {
                       value: score / 100,
                       strokeWidth: 12,
                       color: riskColor,
-                      backgroundColor: Colors.grey.shade200,
+                      backgroundColor: AppUtility.secondaryBlue,
                     ),
                   ),
                   Icon(
@@ -84,6 +84,7 @@ class DetailedAnalysisScreen extends StatelessWidget {
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
                       fontStyle: FontStyle.italic,
+                      color: AppUtility.textDark,
                     ),
                   ),
                   Row(
@@ -96,11 +97,15 @@ class DetailedAnalysisScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 60,
                           fontWeight: FontWeight.bold,
+                          color: AppUtility.textDark,
                         ),
                       ),
                       Text(
                         "/100",
-                        style: TextStyle(fontSize: 24, color: Colors.grey),
+                        style: TextStyle(
+                          fontSize: 24,
+                          color: AppUtility.textGrey,
+                        ),
                       ),
                     ],
                   ),
@@ -116,7 +121,11 @@ class DetailedAnalysisScreen extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: Text(
                 "Score Evaluation:",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppUtility.textDark,
+                ),
               ),
             ),
           ),
@@ -140,7 +149,10 @@ class DetailedAnalysisScreen extends StatelessWidget {
                       ),
                       title: Text(
                         _items[index].title,
-                        style: TextStyle(fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: AppUtility.textDark,
+                        ),
                       ),
                       trailing: Text(
                         _items[index].points,
@@ -169,6 +181,7 @@ class DetailedAnalysisScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
+                        color: AppUtility.textDark,
                       ),
                     ),
                     Text(
@@ -194,7 +207,7 @@ class DetailedAnalysisScreen extends StatelessWidget {
                       "See Previous Results",
                       style: TextStyle(
                         fontSize: 18,
-                        color: Colors.white,
+                        color: AppUtility.textWhite,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

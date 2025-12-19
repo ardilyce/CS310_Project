@@ -33,13 +33,13 @@ class _ExtractedTextScreenState extends State<ExtractedTextScreen> {
         backgroundColor: AppUtility.primaryBlue,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppUtility.textWhite),
+          icon: Icon(Icons.arrow_back, color: AppUtility.textWhite),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
         centerTitle: true,
-        title: const Text(
+        title: Text(
           "Image Upload",
           style: TextStyle(
             color: AppUtility.textWhite,
@@ -69,7 +69,10 @@ class _ExtractedTextScreenState extends State<ExtractedTextScreen> {
                     maxLines: null,
                     expands: true,
                     decoration: const InputDecoration(border: InputBorder.none),
-                    style: const TextStyle(fontSize: 15, color: Colors.black),
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: AppUtility.textDark,
+                    ),
                   ),
                 ),
 
@@ -77,7 +80,7 @@ class _ExtractedTextScreenState extends State<ExtractedTextScreen> {
                 Positioned(
                   top: 12,
                   right: 12,
-                  child: Icon(Icons.edit, color: Colors.black87),
+                  child: Icon(Icons.edit, color: AppUtility.textGrey),
                 ),
               ],
             ),
@@ -103,7 +106,7 @@ class _ExtractedTextScreenState extends State<ExtractedTextScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   "Confirm Text",
                   style: TextStyle(
                     color: AppUtility.textWhite,

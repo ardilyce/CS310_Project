@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import 'utility_class.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -43,13 +44,13 @@ class _SignupScreenState extends State<SignupScreen> {
         body: Container(
           width: double.infinity,
           height: double.infinity,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
               colors: [
-                Color(0xFF022047), // dark blue
-                Color(0xFF0A4DBA), // light blue
+                AppUtility.thirdBlue, // dark blue
+                AppUtility.primaryBlue, // light blue
               ],
             ),
           ),
@@ -474,11 +475,11 @@ class _SignupScreenState extends State<SignupScreen> {
                                       }
                                     }
                                   },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF001B3D),
-                              disabledBackgroundColor: Colors.grey,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppUtility.thirdBlue,
+                                disabledBackgroundColor: Colors.grey,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
                               ),
                             ),
                             child: authProvider.isLoading

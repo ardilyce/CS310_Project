@@ -16,7 +16,9 @@ import 'screens/analysis_results_screen.dart';
 import 'screens/detailed_analysis_screen.dart';
 import 'screens/extracted_text_screen.dart';
 import 'providers/auth_provider.dart';
+import 'providers/theme_provider.dart';
 import 'utils/firebase_options.dart';
+import 'screens/utility_class.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,27 +46,81 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => AuthProvider())],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(fontFamily: "Poppins"),
-        initialRoute: '/splash',
-        routes: {
-          '/splash': (context) => const SplashScreen(),
-          '/login': (context) => const LoginScreen(),
-          '/signup': (context) => const SignupScreen(),
-          '/forget_password': (context) => const ForgotPasswordScreen(),
-          '/image_upload': (context) => const ImageUploadScreen(),
-          '/extracted_text': (context) => const ExtractedTextScreen(),
-          '/home': (context) => const HomeScreen(),
-          '/learn': (context) => const LearnScreen(),
-          '/text_input': (context) => const TextInputScreen(),
-          '/analyze': (context) => const AnalyzeScreen(),
-          '/previous_inquiries': (context) => const PreviousInquiriesScreen(),
-          '/settings': (context) => const SettingsScreen(),
-          '/results': (context) => const AnalysisResultsScreen(),
-          '/details': (context) => DetailedAnalysisScreen(),
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+      ],
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: _buildLightTheme(),
+            darkTheme: _buildDarkTheme(),
+            themeMode:
+                themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            initialRoute: '/splash',
+            routes: {
+              '/splash': (context) => const SplashScreen(),
+              '/login': (context) => const LoginScreen(),
+              '/signup': (context) => const SignupScreen(),
+              '/forget_password': (context) => const ForgotPasswordScreen(),
+              '/image_upload': (context) => const ImageUploadScreen(),
+              '/extracted_text': (context) => const ExtractedTextScreen(),
+              '/home': (context) => const HomeScreen(),
+              '/learn': (context) => const LearnScreen(),
+              '/text_input': (context) => const TextInputScreen(),
+              '/analyze': (context) => const AnalyzeScreen(),
+              '/previous_inquiries': (context) => const PreviousInquiriesScreen(),
+              '/settings': (context) => const SettingsScreen(),
+              '/results': (context) => const AnalysisResultsScreen(),
+              '/details': (context) => DetailedAnalysisScreen(),
+            },
+          );
         },
+      ),
+    );
+  }
+
+  ThemeData _buildLightTheme() {
+    return ThemeData(
+      brightness: Brightness.light,
+      fontFamily: "Poppins",
+      scaffoldBackgroundColor: AppUtility.lightBackground,
+      colorScheme: const ColorScheme.light(
+        primary: AppUtility.lightPrimaryBlue,
+        secondary: AppUtility.lightSecondaryBlue,
+        background: AppUtility.lightBackground,
+        surface: AppUtility.lightSecondaryBlue,
+        onPrimary: Colors.white,
+        onSecondary: AppUtility.lightTextDark,
+        onBackground: AppUtility.lightTextDark,
+        onSurface: AppUtility.lightTextDark,
+      ),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: AppUtility.lightPrimaryBlue,
+        foregroundColor: Colors.white,
+      ),
+    );
+  }
+
+  ThemeData _buildDarkTheme() {
+    return ThemeData(
+      brightness: Brightness.dark,
+      fontFamily: "Poppins",
+      scaffoldBackgroundColor: AppUtility.darkBackground,
+      colorScheme: const ColorScheme.dark(
+        primary: AppUtility.darkPrimaryBlue,
+        secondary: AppUtility.darkSecondaryBlue,
+        background: AppUtility.darkBackground,
+        surface: AppUtility.darkSecondaryBlue,
+        onPrimary: Colors.white,
+        onSecondary: AppUtility.darkTextDark,
+        onBackground: AppUtility.darkTextDark,
+        onSurface: AppUtility.darkTextDark,
+      ),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: AppUtility.darkPrimaryBlue,
+        foregroundColor: Colors.white,
       ),
     );
   }

@@ -54,15 +54,15 @@ class InquiryCard extends StatelessWidget {
                     children: [
                       Text(
                         inquiry.inquiryDateGen(),
-                        style: const TextStyle(
-                          color: Colors.black,
+                        style: TextStyle(
+                          color: AppUtility.textDark,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
                         '#Inquiry ID',
                         style: TextStyle(
-                          color: Colors.black.withOpacity(0.7),
+                          color: AppUtility.textGrey,
                           fontSize: 12,
                         ),
                       ),
@@ -74,12 +74,12 @@ class InquiryCard extends StatelessWidget {
                     child: ShaderMask(
                       shaderCallback: (Rect bounds) {
                         // not very readable gradient but it works
-                        return const LinearGradient(
+                        return LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            Colors.black,
-                            Colors.black,
+                            AppUtility.textDark,
+                            AppUtility.textDark,
                             Colors.transparent,
                           ],
                           stops: [
@@ -94,8 +94,8 @@ class InquiryCard extends StatelessWidget {
                         textToShow,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.black,
+                        style: TextStyle(
+                          color: AppUtility.textDark,
                           fontSize: 14.0,
                         ),
                       ),
@@ -114,9 +114,9 @@ class InquiryCard extends StatelessWidget {
                 border: Border.all(color: AppUtility.textWhite, width: 2),
               ),
               alignment: Alignment.center,
-              child: Text(
-                inquiry.score.toString(),
-                style: const TextStyle(
+                child: Text(
+                  inquiry.score.toString(),
+                style: TextStyle(
                   color: AppUtility.textWhite,
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
@@ -153,7 +153,7 @@ class InquiryDetailsScreen extends StatelessWidget {
           '# Inquiry ID',
           style: TextStyle(color: AppUtility.textWhite),
         ),
-        backgroundColor:AppUtility.primaryBlue,
+        backgroundColor: AppUtility.primaryBlue,
         iconTheme: IconThemeData(color: AppUtility.textWhite),
       ),
       body: Stack(
@@ -174,9 +174,10 @@ class InquiryDetailsScreen extends StatelessWidget {
                         children: [
                           Text(
                             inquiry.inquiryDateGen(),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
+                              color: AppUtility.textDark,
                             ),
                           ),
                           SizedBox(height: 8),
@@ -184,7 +185,7 @@ class InquiryDetailsScreen extends StatelessWidget {
                             '# Inquiry ID: ${inquiry.id}',
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.grey[600],
+                              color: AppUtility.textGrey,
                             ),
                           ),
                         ],
@@ -214,7 +215,7 @@ class InquiryDetailsScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: AppUtility.textDark,
                     ),
                   ),
                   SizedBox(height: 10),
@@ -223,6 +224,7 @@ class InquiryDetailsScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 15,
                       height: 1.4,
+                      color: AppUtility.textDark,
                     ),
                   ),
                 ],
@@ -251,7 +253,7 @@ class InquiryDetailsScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   'Analyze Again',
                   style: TextStyle(fontSize: 18, color: AppUtility.textWhite),
                 ),
@@ -340,7 +342,7 @@ class _PreviousInquiriesScreenState extends State<PreviousInquiriesScreen> {
             color: AppUtility.riskRed,
             alignment: Alignment.centerRight,
             padding: const EdgeInsets.only(right: 16),
-            child: const Icon(Icons.delete, color:AppUtility.textWhite),
+            child: Icon(Icons.delete, color: AppUtility.textWhite),
           ),
           onDismissed: (direction) {
             setState(() {
@@ -403,12 +405,12 @@ class _PreviousInquiriesScreenState extends State<PreviousInquiriesScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Previous Inquiries',
           style: TextStyle(color: AppUtility.textWhite),
         ),
         backgroundColor: AppUtility.primaryBlue,
-        iconTheme: const IconThemeData(color: AppUtility.textWhite),
+        iconTheme: IconThemeData(color: AppUtility.textWhite),
       ),
       body: Column(
         children: [
@@ -435,12 +437,12 @@ class _PreviousInquiriesScreenState extends State<PreviousInquiriesScreen> {
                     children: [
                       Text(
                         sortText,
-                        style: const TextStyle(
-                          color: Colors.black,
+                        style: TextStyle(
+                          color: AppUtility.textDark,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const Icon(Icons.arrow_drop_down, color: Colors.black),
+                      Icon(Icons.arrow_drop_down, color: AppUtility.textDark),
                     ],
                   ),
                 ),

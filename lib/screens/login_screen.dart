@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import 'utility_class.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -36,13 +37,13 @@ class _LoginScreenState extends State<LoginScreen> {
         body: Container(
           width: double.infinity,
           height: double.infinity,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
               colors: [
-                Color(0xFF022047), // dark blue
-                Color(0xFF0A4DBA), // light blue
+                AppUtility.thirdBlue, // dark blue
+                AppUtility.primaryBlue, // light blue
               ],
             ),
           ),
@@ -344,7 +345,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       }
                                     },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF001B3D),
+                                backgroundColor: AppUtility.thirdBlue,
                                 disabledBackgroundColor: Colors.grey,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),

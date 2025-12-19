@@ -58,12 +58,12 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.error_outline, color: AppUtility.textWhite),
+                Icon(Icons.error_outline, color: AppUtility.textWhite),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     message,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppUtility.textWhite,
                       fontWeight: FontWeight.bold,
                     ),
@@ -97,14 +97,14 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
         backgroundColor: AppUtility.primaryBlue,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppUtility.textWhite),
+          icon: Icon(Icons.arrow_back, color: AppUtility.textWhite),
           onPressed: () {
             // Navigate back to home screen
             Navigator.pushReplacementNamed(context, '/home');
           },
         ),
         centerTitle: true,
-        title: const Text(
+        title: Text(
           "Image Upload",
           style: TextStyle(
             color: AppUtility.textWhite,
@@ -134,7 +134,7 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
                   child: _selectedImage == null
                       ? Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
+                          children: [
                             Icon(
                               Icons.camera_alt,
                               color: AppUtility.primaryBlue,
@@ -146,7 +146,7 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 16,
-                                color: Colors.black,
+                                color: AppUtility.textDark,
                               ),
                             ),
                             SizedBox(height: 6),
@@ -201,7 +201,7 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   "Analyze Image",
                   style: TextStyle(
                     color: AppUtility.textWhite,

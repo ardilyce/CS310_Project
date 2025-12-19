@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import 'utility_class.dart';
 import 'login_screen.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -38,7 +39,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              backgroundColor: const Color(0xFF022047),
+              backgroundColor: AppUtility.thirdBlue,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
@@ -65,10 +66,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     Navigator.of(context).pop(); // Close dialog
                     Navigator.pushReplacementNamed(context, '/login');
                   },
-                  child: const Text(
+                  child: Text(
                     "Back to Login",
                     style: TextStyle(
-                      color: Color(0xFF0A4DBA),
+                      color: AppUtility.primaryBlue,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -87,16 +88,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: [
-              Color(0xFF022047), // dark blue
-              Color(0xFF0A4DBA), // light blue
-            ],
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                AppUtility.thirdBlue, // dark blue
+                AppUtility.primaryBlue, // light blue
+              ],
+            ),
           ),
-        ),
         child: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
@@ -298,7 +299,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           child: ElevatedButton(
                             onPressed: authProvider.isLoading ? null : _submitEmail,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF001B3D),
+                              backgroundColor: AppUtility.thirdBlue,
                               disabledBackgroundColor: Colors.grey,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),

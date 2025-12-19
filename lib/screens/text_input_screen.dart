@@ -59,12 +59,12 @@ class _TextInputScreenState extends State<TextInputScreen> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.error_outline, color: AppUtility.textWhite),
+                Icon(Icons.error_outline, color: AppUtility.textWhite),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     message,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppUtility.textWhite,
                       fontWeight: FontWeight.bold,
                     ),
@@ -98,14 +98,14 @@ class _TextInputScreenState extends State<TextInputScreen> {
         backgroundColor: AppUtility.primaryBlue, // Style from your example
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppUtility.textWhite),
+          icon: Icon(Icons.arrow_back, color: AppUtility.textWhite),
           onPressed: () {
             // A standard back button action
             Navigator.pop(context);
           },
         ),
         centerTitle: true,
-        title: const Text(
+        title: Text(
           "Input Text", // Title from your image
           style: TextStyle(
             color: AppUtility.textWhite,
@@ -141,7 +141,7 @@ class _TextInputScreenState extends State<TextInputScreen> {
                         hintText: "Tap to enter text.",
                         border: InputBorder.none,
                       ),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
                         color: AppUtility.textDark,
@@ -173,7 +173,7 @@ class _TextInputScreenState extends State<TextInputScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   "Analyze From Text", // Text from your image
                   style: TextStyle(
                     color: AppUtility.textWhite,
