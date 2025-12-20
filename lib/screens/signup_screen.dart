@@ -468,6 +468,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                       bool success = await authProvider.signUp(
                                         email: _emailController.text,
                                         password: _passwordController.text,
+                                        name: _nameController.text,
+                                        age: int.parse(_ageController.text),
                                       );
 
                                       if (success && context.mounted) {

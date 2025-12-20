@@ -2,9 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
+import '../services/database_service.dart';
 
 class AuthProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
+  final DatabaseService _databaseService = DatabaseService();
   User? _user;
   bool _isLoading = false;
   String? _errorMessage;
@@ -23,15 +25,27 @@ class AuthProvider with ChangeNotifier {
     });
   }
 
-  // Sign up
+  // Sign up - stores data in Firestore as pending registration
+  // Creates temporary Firebase Auth user for email verification, then signs out
   Future<bool> signUp({
     required String email,
     required String password,
+    required String name,
+    required int age,
   }) async {
     try {
       _setLoading(true);
       _clearError();
       
+      // Step 1: Store pending registration in Firestore (not in users collection yet)
+      await _databaseService.storePendingRegistration(
+        email: email,
+        password: password,
+        name: name,
+        age: age,
+      );
+
+      // Step 2: Create temporary Firebase Auth user (required for email verification)
       UserCredential? userCredential = await _authService.signUpWithEmailAndPassword(
         email: email,
         password: password,
@@ -39,32 +53,61 @@ class AuthProvider with ChangeNotifier {
 
       if (userCredential != null) {
         _user = userCredential.user;
-        // Send verification email after sign up
+        
+        // Step 3: Send verification email
         if (_user != null && !_user!.emailVerified) {
           try {
             await _authService.sendEmailVerification();
           } catch (e) {
             debugPrint('⚠️ Failed to send verification email: $e');
-            // Don't fail sign up if verification email fails
+            // Clean up: delete pending registration and Firebase Auth user if email fails
+            await _databaseService.deletePendingRegistration(email);
+            await _user?.delete();
+            _user = null;
+            _setError('Failed to send verification email. Please try again.');
+            _setLoading(false);
+            notifyListeners();
+            return false;
           }
         }
+        
+        // Step 4: Sign out immediately - user cannot use account until email is verified
+        await _authService.signOut();
+        _user = null;
+        
         _setLoading(false);
         notifyListeners();
         return true;
       }
       
+      // If user creation failed, clean up pending registration
+      await _databaseService.deletePendingRegistration(email);
       _setLoading(false);
       return false;
     } catch (e) {
       debugPrint('❌ Sign up error: $e');
-      _setError(e.toString());
+      
+      // Clean up: delete pending registration if it was created
+      try {
+        await _databaseService.deletePendingRegistration(email);
+      } catch (cleanupError) {
+        debugPrint('⚠️ Failed to cleanup pending registration: $cleanupError');
+      }
+      
+      // Extract error message
+      String errorMessage = e.toString();
+      if (errorMessage.startsWith('Exception: ')) {
+        errorMessage = errorMessage.substring(11);
+      }
+      
+      _setError(errorMessage);
       _setLoading(false);
       notifyListeners();
       return false;
     }
   }
 
-  // Sign in
+  // Sign in - only allows sign in if email is verified
   Future<bool> signIn({
     required String email,
     required String password,
@@ -80,6 +123,23 @@ class AuthProvider with ChangeNotifier {
 
       if (userCredential != null) {
         _user = userCredential.user;
+        
+        // Check if email is verified
+        if (_user != null && !_user!.emailVerified) {
+          // Sign out if email is not verified
+          await _authService.signOut();
+          _user = null;
+          _setError('Please verify your email before signing in. Check your inbox for the verification link.');
+          _setLoading(false);
+          notifyListeners();
+          return false;
+        }
+        
+        // If email is verified, complete registration if not already done
+        if (_user != null && _user!.emailVerified) {
+          await _completeRegistrationAfterVerification(_user!);
+        }
+        
         _setLoading(false);
         notifyListeners();
         return true;
@@ -199,12 +259,56 @@ class AuthProvider with ChangeNotifier {
   }
 
   // Send email verification
-  Future<bool> sendVerificationEmail() async {
+  // If no user is signed in, signs in temporarily with pending registration to send email
+  Future<bool> sendVerificationEmail({String? email}) async {
     try {
       _setLoading(true);
       _clearError();
       
+      User? currentUser = _authService.currentUser;
+      bool wasSignedIn = currentUser != null;
+      
+      // If no user is signed in, try to sign in with pending registration
+      if (!wasSignedIn && email != null) {
+        final pendingData = await _databaseService.getPendingRegistration(email);
+        if (pendingData != null) {
+          try {
+            UserCredential? userCredential = await _authService.signInWithEmailAndPassword(
+              email: pendingData['email'],
+              password: pendingData['password'],
+            );
+            if (userCredential != null) {
+              currentUser = userCredential.user;
+            }
+          } catch (e) {
+            debugPrint('❌ Failed to sign in for resending verification: $e');
+            _setError('Failed to resend verification email. Please try signing up again.');
+            _setLoading(false);
+            notifyListeners();
+            return false;
+          }
+        } else {
+          _setError('No pending registration found. Please sign up again.');
+          _setLoading(false);
+          notifyListeners();
+          return false;
+        }
+      }
+      
+      if (currentUser == null) {
+        _setError('Unable to send verification email. Please try signing up again.');
+        _setLoading(false);
+        notifyListeners();
+        return false;
+      }
+      
       await _authService.sendEmailVerification();
+      
+      // If we signed in temporarily, sign out again
+      if (!wasSignedIn) {
+        await _authService.signOut();
+        _user = null;
+      }
       
       _setLoading(false);
       notifyListeners();
@@ -230,17 +334,98 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  // Check email verification status
-  Future<bool> checkEmailVerified() async {
+  // Check email verification status and complete registration if verified
+  // This method is called from the email verification screen
+  Future<bool> checkEmailVerified({String? email}) async {
     try {
-      await _authService.reloadUser();
-      // Update user from auth service
-      _user = _authService.currentUser;
+      // Check if there's a current user (they might have signed in after clicking verification link)
+      User? currentUser = _authService.currentUser;
+      
+      if (currentUser != null) {
+        // Reload to get latest verification status
+        await _authService.reloadUser();
+        currentUser = _authService.currentUser;
+        
+        if (currentUser != null && currentUser.emailVerified) {
+          // Email is verified - complete the registration
+          await _completeRegistrationAfterVerification(currentUser);
+          _user = currentUser;
+          notifyListeners();
+          return true;
+        }
+      }
+      
+      // If no user is signed in but we have an email, try to sign in with pending registration
+      // This handles the case where user verifies email via link but isn't signed in
+      if (email != null && currentUser == null) {
+        final pendingData = await _databaseService.getPendingRegistration(email);
+        
+        if (pendingData != null) {
+          // Try to sign in to check if email is verified
+          try {
+            UserCredential? userCredential = await _authService.signInWithEmailAndPassword(
+              email: pendingData['email'],
+              password: pendingData['password'],
+            );
+            
+            if (userCredential != null) {
+              await _authService.reloadUser();
+              User? user = _authService.currentUser;
+              
+              if (user != null && user.emailVerified) {
+                await _completeRegistrationAfterVerification(user);
+                _user = user;
+                notifyListeners();
+                return true;
+              } else {
+                // Email not verified yet, sign out
+                await _authService.signOut();
+              }
+            }
+          } catch (e) {
+            debugPrint('❌ Failed to check verification status: $e');
+          }
+        }
+      }
+      
       notifyListeners();
-      return _user?.emailVerified ?? false;
+      return false;
     } catch (e) {
       debugPrint('❌ Check email verification error: $e');
       return false;
+    }
+  }
+
+  // Complete registration after email verification
+  // Creates user record in database and cleans up pending registration
+  Future<void> _completeRegistrationAfterVerification(User user) async {
+    try {
+      if (user.email == null) {
+        throw 'User email is null';
+      }
+
+      // Get pending registration data
+      final pendingData = await _databaseService.getPendingRegistration(user.email!);
+      
+      if (pendingData != null) {
+        // Mark pending registration as verified
+        await _databaseService.completeRegistration(user.email!);
+        
+        // Store user data in users collection (this is when the account is actually created)
+        await _databaseService.storeUserData(
+          userId: user.uid,
+          email: user.email!,
+          name: pendingData['name'],
+          age: pendingData['age'],
+        );
+        
+        // Delete pending registration
+        await _databaseService.deletePendingRegistration(user.email!);
+      }
+    } catch (e) {
+      debugPrint('❌ Failed to complete registration: $e');
+      // Don't throw - allow user to proceed even if database update fails
+      // The Firebase Auth user is already created and verified
     }
   }
 }

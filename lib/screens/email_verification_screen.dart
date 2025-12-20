@@ -25,7 +25,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     });
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    bool isVerified = await authProvider.checkEmailVerified();
+    bool isVerified = await authProvider.checkEmailVerified(email: widget.email);
 
     setState(() {
       _isChecking = false;
@@ -35,7 +35,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Email verified successfully!'),
+          content: Text('Email verified successfully! Your account has been created.'),
           backgroundColor: Colors.green,
         ),
       );
@@ -45,7 +45,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       // Show message that email is not verified yet
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Email not verified yet. Please check your inbox.'),
+          content: Text('Email not verified yet. Please check your inbox and click the verification link.'),
           backgroundColor: Colors.orange,
         ),
       );
@@ -54,7 +54,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
   Future<void> _resendVerification() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    bool success = await authProvider.sendVerificationEmail();
+    bool success = await authProvider.sendVerificationEmail(email: widget.email);
     
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
