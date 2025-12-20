@@ -15,6 +15,7 @@ import 'screens/settings_screen.dart';
 import 'screens/analysis_results_screen.dart';
 import 'screens/detailed_analysis_screen.dart';
 import 'screens/extracted_text_screen.dart';
+import 'screens/email_verification_screen.dart';
 import 'providers/auth_provider.dart';
 import 'providers/theme_provider.dart';
 import 'utils/firebase_options.dart';
@@ -64,6 +65,10 @@ class MyApp extends StatelessWidget {
               '/login': (context) => const LoginScreen(),
               '/signup': (context) => const SignupScreen(),
               '/forget_password': (context) => const ForgotPasswordScreen(),
+              '/email_verification': (context) {
+                final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+                return EmailVerificationScreen(email: args['email']);
+              },
               '/image_upload': (context) => const ImageUploadScreen(),
               '/extracted_text': (context) => const ExtractedTextScreen(),
               '/home': (context) => const HomeScreen(),

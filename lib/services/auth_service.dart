@@ -65,6 +65,37 @@ class AuthService {
     }
   }
 
+  // Send email verification
+  Future<void> sendEmailVerification() async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null && !user.emailVerified) {
+        await user.sendEmailVerification();
+      }
+    } on FirebaseAuthException catch (e) {
+      throw _handleAuthException(e);
+    } catch (e) {
+      throw 'An unexpected error occurred. Please try again.';
+    }
+  }
+
+  // Reload user to check email verification status
+  Future<void> reloadUser() async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null) {
+        await user.reload();
+      }
+    } catch (e) {
+      throw 'An unexpected error occurred. Please try again.';
+    }
+  }
+
+  // Check if email is verified
+  bool get isEmailVerified {
+    return _auth.currentUser?.emailVerified ?? false;
+  }
+
   // Handle Firebase Auth exceptions and return user-friendly messages
   String _handleAuthException(FirebaseAuthException e) {
     switch (e.code) {
@@ -76,6 +107,8 @@ class AuthService {
         return 'No user found for that email.';
       case 'wrong-password':
         return 'Wrong password provided.';
+      case 'invalid-credential':
+        return 'Incorrect email or password.';
       case 'invalid-email':
         return 'The email address is invalid.';
       case 'user-disabled':
@@ -87,6 +120,19 @@ class AuthService {
       case 'network-request-failed':
         return 'Network error. Please check your internet connection.';
       default:
+        // Check if the error message contains credential-related keywords
+        String? message = e.message;
+        if (message != null) {
+          String lowerMessage = message.toLowerCase();
+          if (lowerMessage.contains('credential') || 
+              lowerMessage.contains('incorrect') ||
+              lowerMessage.contains('wrong') ||
+              lowerMessage.contains('invalid') ||
+              lowerMessage.contains('malformed') ||
+              lowerMessage.contains('expired')) {
+            return 'Incorrect email or password.';
+          }
+        }
         return e.message ?? 'An authentication error occurred.';
     }
   }

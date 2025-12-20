@@ -57,7 +57,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 ],
               ),
               content: Text(
-                "A password reset link has been sent to ${_emailController.text}. Please check your inbox.",
+                "A password reset link has been sent to ${_emailController.text}.\n\nPlease check your inbox and spam folder. The email may take a few minutes to arrive.",
                 style: const TextStyle(color: Colors.white70, fontSize: 16),
               ),
               actions: [

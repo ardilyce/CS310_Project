@@ -13,6 +13,7 @@ class AuthProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isAuthenticated => _user != null;
+  bool get isEmailVerified => _user?.emailVerified ?? false;
 
   AuthProvider() {
     // Listen to auth state changes
@@ -38,6 +39,15 @@ class AuthProvider with ChangeNotifier {
 
       if (userCredential != null) {
         _user = userCredential.user;
+        // Send verification email after sign up
+        if (_user != null && !_user!.emailVerified) {
+          try {
+            await _authService.sendEmailVerification();
+          } catch (e) {
+            debugPrint('⚠️ Failed to send verification email: $e');
+            // Don't fail sign up if verification email fails
+          }
+        }
         _setLoading(false);
         notifyListeners();
         return true;
@@ -79,7 +89,33 @@ class AuthProvider with ChangeNotifier {
       return false;
     } catch (e) {
       debugPrint('❌ Sign in error: $e');
-      _setError(e.toString());
+      // Extract the error message from the exception
+      String errorMessage = e.toString();
+      // Remove "Exception: " prefix if present
+      if (errorMessage.startsWith('Exception: ')) {
+        errorMessage = errorMessage.substring(11);
+      }
+      // Handle all credential-related errors with a simple, user-friendly message
+      String lowerMessage = errorMessage.toLowerCase();
+      if (lowerMessage.contains('wrong-password') || 
+          lowerMessage.contains('wrong password') ||
+          lowerMessage.contains('invalid-credential') ||
+          lowerMessage.contains('user-not-found') ||
+          lowerMessage.contains('no user found') ||
+          lowerMessage.contains('credential') ||
+          lowerMessage.contains('incorrect') ||
+          lowerMessage.contains('malformed') ||
+          lowerMessage.contains('expired')) {
+        errorMessage = 'Incorrect email or password.';
+      } else if (lowerMessage.contains('invalid-email') || lowerMessage.contains('invalid email')) {
+        errorMessage = 'The email address is invalid.';
+      } else if (lowerMessage.contains('network')) {
+        errorMessage = 'Network error. Please check your internet connection.';
+      } else {
+        // For any other authentication error, show the generic message
+        errorMessage = 'Incorrect email or password.';
+      }
+      _setError(errorMessage);
       _setLoading(false);
       notifyListeners();
       return false;
@@ -112,7 +148,30 @@ class AuthProvider with ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      _setError(e.toString());
+      debugPrint('❌ Password reset error: $e');
+      // Extract the error message from the exception
+      String errorMessage = e.toString();
+      // Remove "Exception: " prefix if present
+      if (errorMessage.startsWith('Exception: ')) {
+        errorMessage = errorMessage.substring(11);
+      }
+      // Handle common password reset errors
+      String lowerMessage = errorMessage.toLowerCase();
+      if (lowerMessage.contains('user-not-found') || 
+          lowerMessage.contains('no user found')) {
+        errorMessage = 'No account found with this email address.';
+      } else if (lowerMessage.contains('invalid-email') || 
+                 lowerMessage.contains('invalid email')) {
+        errorMessage = 'The email address is invalid.';
+      } else if (lowerMessage.contains('network')) {
+        errorMessage = 'Network error. Please check your internet connection.';
+      } else if (lowerMessage.contains('too-many-requests')) {
+        errorMessage = 'Too many requests. Please try again later.';
+      } else {
+        // For any other error, show a generic message
+        errorMessage = 'Failed to send reset email. Please try again.';
+      }
+      _setError(errorMessage);
       _setLoading(false);
       notifyListeners();
       return false;
@@ -138,5 +197,50 @@ class AuthProvider with ChangeNotifier {
   void clearError() {
     _clearError();
   }
-}
 
+  // Send email verification
+  Future<bool> sendVerificationEmail() async {
+    try {
+      _setLoading(true);
+      _clearError();
+      
+      await _authService.sendEmailVerification();
+      
+      _setLoading(false);
+      notifyListeners();
+      return true;
+    } catch (e) {
+      debugPrint('❌ Send verification email error: $e');
+      String errorMessage = e.toString();
+      if (errorMessage.startsWith('Exception: ')) {
+        errorMessage = errorMessage.substring(11);
+      }
+      String lowerMessage = errorMessage.toLowerCase();
+      if (lowerMessage.contains('network')) {
+        errorMessage = 'Network error. Please check your internet connection.';
+      } else if (lowerMessage.contains('too-many-requests')) {
+        errorMessage = 'Too many requests. Please try again later.';
+      } else {
+        errorMessage = 'Failed to send verification email. Please try again.';
+      }
+      _setError(errorMessage);
+      _setLoading(false);
+      notifyListeners();
+      return false;
+    }
+  }
+
+  // Check email verification status
+  Future<bool> checkEmailVerified() async {
+    try {
+      await _authService.reloadUser();
+      // Update user from auth service
+      _user = _authService.currentUser;
+      notifyListeners();
+      return _user?.emailVerified ?? false;
+    } catch (e) {
+      debugPrint('❌ Check email verification error: $e');
+      return false;
+    }
+  }
+}

@@ -286,39 +286,45 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 24),
 
                       // Error message display
-                      if (Provider.of<AuthProvider>(context, listen: false).errorMessage != null)
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          margin: const EdgeInsets.only(bottom: 16),
-                          decoration: BoxDecoration(
-                            color: Colors.red.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.red, width: 1),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.error_outline, color: Colors.red, size: 20),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  Provider.of<AuthProvider>(context, listen: false).errorMessage ?? '',
-                                  style: const TextStyle(
-                                    color: Colors.red,
-                                    fontSize: 14,
+                      Consumer<AuthProvider>(
+                        builder: (context, authProvider, child) {
+                          if (authProvider.errorMessage == null) {
+                            return const SizedBox.shrink();
+                          }
+                          return Container(
+                            padding: const EdgeInsets.all(12),
+                            margin: const EdgeInsets.only(bottom: 16),
+                            decoration: BoxDecoration(
+                              color: Colors.red.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.red, width: 1),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.error_outline, color: Colors.red, size: 20),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    authProvider.errorMessage ?? '',
+                                    style: const TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 14,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.close, color: Colors.red, size: 18),
-                                onPressed: () {
-                                  Provider.of<AuthProvider>(context, listen: false).clearError();
-                                },
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                              ),
-                            ],
-                          ),
-                        ),
+                                IconButton(
+                                  icon: const Icon(Icons.close, color: Colors.red, size: 18),
+                                  onPressed: () {
+                                    authProvider.clearError();
+                                  },
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
 
                       // Login button
                       Consumer<AuthProvider>(
@@ -337,10 +343,30 @@ class _LoginScreenState extends State<LoginScreen> {
                                         );
 
                                         if (success && context.mounted) {
-                                          Navigator.pushReplacementNamed(
-                                            context,
-                                            '/home',
-                                          );
+                                          // Check if email is verified
+                                          bool isVerified = authProvider.isEmailVerified;
+                                          if (!isVerified) {
+                                            // Show warning and navigate to verification screen
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(
+                                                content: const Text(
+                                                  'Please verify your email address before logging in.',
+                                                ),
+                                                backgroundColor: Colors.orange,
+                                                duration: const Duration(seconds: 3),
+                                              ),
+                                            );
+                                            Navigator.pushReplacementNamed(
+                                              context,
+                                              '/email_verification',
+                                              arguments: {'email': _emailController.text},
+                                            );
+                                          } else {
+                                            Navigator.pushReplacementNamed(
+                                              context,
+                                              '/home',
+                                            );
+                                          }
                                         }
                                       }
                                     },
