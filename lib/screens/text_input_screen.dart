@@ -1,5 +1,7 @@
 import 'dart:ui' as ui; // Needed for the Painter
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'utility_class.dart';
 import 'analyze_screen.dart';
 
@@ -15,6 +17,8 @@ class _TextInputScreenState extends State<TextInputScreen> {
   final TextEditingController _textController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   OverlayEntry? _errorOverlay;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void dispose() {
@@ -159,13 +163,23 @@ class _TextInputScreenState extends State<TextInputScreen> {
               width: double.infinity,
               height: 55,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_textController.text.trim().isEmpty) {
                     _showTopError("Please enter some text first.");
                     return;
                   }
-                  // TODO: analyze from text logic
-                  Navigator.pushNamed(context, '/analyze');
+                  
+                  final User? user = _auth.currentUser;
+                  if (user != null) {
+                    await _firestore.collection('texts').add({
+                      'text': _textController.text,
+                      'createdAt': Timestamp.now(),
+                      'userId': user.uid,
+                    });
+                    Navigator.pushNamed(context, '/analyze');
+                  } else {
+                    _showTopError("You need to be logged in to save text.");
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppUtility.primaryBlue,
