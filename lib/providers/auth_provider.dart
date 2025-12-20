@@ -16,6 +16,9 @@ class AuthProvider with ChangeNotifier {
   String? get errorMessage => _errorMessage;
   bool get isAuthenticated => _user != null;
   bool get isEmailVerified => _user?.emailVerified ?? false;
+  
+  // Expose auth state changes stream for real-time route protection
+  Stream<User?> get authStateChanges => _authService.authStateChanges;
 
   AuthProvider() {
     // Listen to auth state changes
@@ -37,7 +40,23 @@ class AuthProvider with ChangeNotifier {
       _setLoading(true);
       _clearError();
       
-      // Step 1: Store pending registration in Firestore (not in users collection yet)
+      // Step 1: Create temporary Firebase Auth user FIRST (required for Firestore permissions)
+      // This authenticates the user so they can write to Firestore
+      UserCredential? userCredential = await _authService.signUpWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      if (userCredential == null) {
+        _setError('Failed to create account. Please try again.');
+        _setLoading(false);
+        notifyListeners();
+        return false;
+      }
+
+      _user = userCredential.user;
+
+      // Step 2: Store pending registration in Firestore (now authenticated, so rules allow it)
       await _databaseService.storePendingRegistration(
         email: email,
         password: password,
@@ -45,53 +64,48 @@ class AuthProvider with ChangeNotifier {
         age: age,
       );
 
-      // Step 2: Create temporary Firebase Auth user (required for email verification)
-      UserCredential? userCredential = await _authService.signUpWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      if (userCredential != null) {
-        _user = userCredential.user;
-        
-        // Step 3: Send verification email
-        if (_user != null && !_user!.emailVerified) {
-          try {
-            await _authService.sendEmailVerification();
-          } catch (e) {
-            debugPrint('⚠️ Failed to send verification email: $e');
-            // Clean up: delete pending registration and Firebase Auth user if email fails
-            await _databaseService.deletePendingRegistration(email);
-            await _user?.delete();
-            _user = null;
-            _setError('Failed to send verification email. Please try again.');
-            _setLoading(false);
-            notifyListeners();
-            return false;
-          }
+      // Step 3: Send verification email
+      if (_user != null && !_user!.emailVerified) {
+        try {
+          await _authService.sendEmailVerification();
+        } catch (e) {
+          debugPrint('⚠️ Failed to send verification email: $e');
+          // Clean up: delete pending registration and Firebase Auth user if email fails
+          await _databaseService.deletePendingRegistration(email);
+          await _user?.delete();
+          _user = null;
+          _setError('Failed to send verification email. Please try again.');
+          _setLoading(false);
+          notifyListeners();
+          return false;
         }
-        
-        // Step 4: Sign out immediately - user cannot use account until email is verified
-        await _authService.signOut();
-        _user = null;
-        
-        _setLoading(false);
-        notifyListeners();
-        return true;
       }
       
-      // If user creation failed, clean up pending registration
-      await _databaseService.deletePendingRegistration(email);
+      // Step 4: Sign out immediately - user cannot use account until email is verified
+      await _authService.signOut();
+      _user = null;
+      
       _setLoading(false);
-      return false;
+      notifyListeners();
+      return true;
     } catch (e) {
       debugPrint('❌ Sign up error: $e');
       
-      // Clean up: delete pending registration if it was created
+      // Clean up: delete pending registration and Firebase Auth user if they were created
       try {
         await _databaseService.deletePendingRegistration(email);
       } catch (cleanupError) {
         debugPrint('⚠️ Failed to cleanup pending registration: $cleanupError');
+      }
+      
+      // Delete Firebase Auth user if it was created
+      try {
+        if (_user != null) {
+          await _user?.delete();
+          _user = null;
+        }
+      } catch (cleanupError) {
+        debugPrint('⚠️ Failed to cleanup Firebase Auth user: $cleanupError');
       }
       
       // Extract error message

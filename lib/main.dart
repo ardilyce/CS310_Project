@@ -60,30 +60,197 @@ class MyApp extends StatelessWidget {
             themeMode:
                 themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
             initialRoute: '/splash',
+            // Use onGenerateRoute for route protection
+            onGenerateRoute: (settings) {
+              return _generateRoute(settings, themeProvider);
+            },
+            // Keep routes for backward compatibility (but onGenerateRoute takes precedence)
             routes: {
               '/splash': (context) => const SplashScreen(),
               '/login': (context) => const LoginScreen(),
               '/signup': (context) => const SignupScreen(),
               '/forget_password': (context) => const ForgotPasswordScreen(),
-              '/email_verification': (context) {
-                final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-                return EmailVerificationScreen(email: args['email']);
-              },
-              '/image_upload': (context) => const ImageUploadScreen(),
-              '/extracted_text': (context) => const ExtractedTextScreen(),
-              '/home': (context) => const HomeScreen(),
-              '/learn': (context) => const LearnScreen(),
-              '/text_input': (context) => const TextInputScreen(),
-              '/analyze': (context) => const AnalyzeScreen(),
-              '/previous_inquiries': (context) => const PreviousInquiriesScreen(),
-              '/settings': (context) => const SettingsScreen(),
-              '/results': (context) => const AnalysisResultsScreen(),
-              '/details': (context) => DetailedAnalysisScreen(),
             },
           );
         },
       ),
     );
+  }
+
+  // Route generator with authentication protection
+  Route<dynamic> _generateRoute(RouteSettings settings, ThemeProvider themeProvider) {
+    // Public routes (accessible without authentication)
+    final publicRoutes = [
+      '/splash',
+      '/login',
+      '/signup',
+      '/forget_password',
+    ];
+
+    // Protected routes (require authentication)
+    final protectedRoutes = [
+      '/home',
+      '/settings',
+      '/previous_inquiries',
+      '/text_input',
+      '/image_upload',
+      '/analyze',
+      '/results',
+      '/details',
+      '/extracted_text',
+      '/learn',
+    ];
+
+    // Check if route is public
+    if (publicRoutes.contains(settings.name)) {
+      return _buildRoute(settings, themeProvider);
+    }
+
+    // Check if route is protected
+    if (protectedRoutes.contains(settings.name)) {
+      return MaterialPageRoute(
+        builder: (context) {
+          // Use Consumer to access AuthProvider and StreamBuilder for real-time updates
+          return Consumer<AuthProvider>(
+            builder: (context, authProvider, child) {
+              return StreamBuilder(
+                stream: authProvider.authStateChanges,
+                builder: (context, snapshot) {
+                  // Show loading while checking auth state
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Scaffold(
+                      body: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+
+                  final user = snapshot.data;
+
+                  // If user is not authenticated, redirect to login
+                  if (user == null || !authProvider.isAuthenticated) {
+                    // Use WidgetsBinding to ensure navigation happens after build
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (context.mounted) {
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          '/login',
+                          (route) => false,
+                        );
+                      }
+                    });
+                    return const Scaffold(
+                      body: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+
+                  // Check if email is verified (required for protected routes)
+                  if (!user.emailVerified) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (context.mounted) {
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          '/email_verification',
+                          (route) => false,
+                          arguments: {'email': user.email ?? ''},
+                        );
+                      }
+                    });
+                    return const Scaffold(
+                      body: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+
+                  // User is authenticated and verified, show the protected route
+                  return _buildWidgetForRoute(settings.name ?? '/home');
+                },
+              );
+            },
+          );
+        },
+      );
+    }
+
+    // Handle email_verification route with arguments
+    if (settings.name == '/email_verification') {
+      final args = settings.arguments as Map<String, dynamic>?;
+      return MaterialPageRoute(
+        builder: (context) => EmailVerificationScreen(
+          email: args?['email'] ?? '',
+        ),
+      );
+    }
+
+    // Unknown route, redirect to splash
+    return MaterialPageRoute(
+      builder: (context) => const SplashScreen(),
+    );
+  }
+
+  // Build widget for route (used in StreamBuilder)
+  Widget _buildWidgetForRoute(String? routeName) {
+    switch (routeName) {
+      case '/home':
+        return const HomeScreen();
+      case '/settings':
+        return const SettingsScreen();
+      case '/previous_inquiries':
+        return const PreviousInquiriesScreen();
+      case '/text_input':
+        return const TextInputScreen();
+      case '/image_upload':
+        return const ImageUploadScreen();
+      case '/analyze':
+        return const AnalyzeScreen();
+      case '/results':
+        return const AnalysisResultsScreen();
+      case '/details':
+        return DetailedAnalysisScreen();
+      case '/extracted_text':
+        return const ExtractedTextScreen();
+      case '/learn':
+        return const LearnScreen();
+      default:
+        return const HomeScreen();
+    }
+  }
+
+  // Build route based on route name
+  Route<dynamic> _buildRoute(RouteSettings settings, ThemeProvider themeProvider) {
+    switch (settings.name) {
+      case '/splash':
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
+      case '/login':
+        return MaterialPageRoute(builder: (_) => const LoginScreen());
+      case '/signup':
+        return MaterialPageRoute(builder: (_) => const SignupScreen());
+      case '/forget_password':
+        return MaterialPageRoute(builder: (_) => const ForgotPasswordScreen());
+      case '/home':
+        return MaterialPageRoute(builder: (_) => const HomeScreen());
+      case '/settings':
+        return MaterialPageRoute(builder: (_) => const SettingsScreen());
+      case '/previous_inquiries':
+        return MaterialPageRoute(builder: (_) => const PreviousInquiriesScreen());
+      case '/text_input':
+        return MaterialPageRoute(builder: (_) => const TextInputScreen());
+      case '/image_upload':
+        return MaterialPageRoute(builder: (_) => const ImageUploadScreen());
+      case '/analyze':
+        return MaterialPageRoute(builder: (_) => const AnalyzeScreen());
+      case '/results':
+        return MaterialPageRoute(builder: (_) => const AnalysisResultsScreen());
+      case '/details':
+        return MaterialPageRoute(builder: (_) => DetailedAnalysisScreen());
+      case '/extracted_text':
+        return MaterialPageRoute(builder: (_) => const ExtractedTextScreen());
+      case '/learn':
+        return MaterialPageRoute(builder: (_) => const LearnScreen());
+      default:
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
+    }
   }
 
   ThemeData _buildLightTheme() {
