@@ -21,17 +21,6 @@ service cloud.firestore {
       allow create: if isAuthenticated() && request.auth.uid == userId;
     }
     
-    // Pending registrations collection
-    // Users can only access their own pending registration by email
-    match /pending_registrations/{email} {
-      // Allow read/write if authenticated and email matches
-      // Note: In production, you might want to add additional checks
-      allow read, write: if isAuthenticated();
-      
-      // Allow creation during sign-up
-      allow create: if isAuthenticated();
-    }
-    
     // Inquiries collection - users can only access their own inquiries
     match /inquiries/{inquiryId} {
       // Users can read inquiries they created

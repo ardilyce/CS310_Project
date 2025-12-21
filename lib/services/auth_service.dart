@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -65,36 +66,6 @@ class AuthService {
     }
   }
 
-  // Send email verification
-  Future<void> sendEmailVerification() async {
-    try {
-      User? user = _auth.currentUser;
-      if (user != null && !user.emailVerified) {
-        await user.sendEmailVerification();
-      }
-    } on FirebaseAuthException catch (e) {
-      throw _handleAuthException(e);
-    } catch (e) {
-      throw 'An unexpected error occurred. Please try again.';
-    }
-  }
-
-  // Reload user to check email verification status
-  Future<void> reloadUser() async {
-    try {
-      User? user = _auth.currentUser;
-      if (user != null) {
-        await user.reload();
-      }
-    } catch (e) {
-      throw 'An unexpected error occurred. Please try again.';
-    }
-  }
-
-  // Check if email is verified
-  bool get isEmailVerified {
-    return _auth.currentUser?.emailVerified ?? false;
-  }
 
   // Handle Firebase Auth exceptions and return user-friendly messages
   String _handleAuthException(FirebaseAuthException e) {

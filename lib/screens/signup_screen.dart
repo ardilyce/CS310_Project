@@ -473,11 +473,10 @@ class _SignupScreenState extends State<SignupScreen> {
                                       );
 
                                       if (success && context.mounted) {
-                                        // Navigate to email verification screen
+                                        // Navigate to home screen
                                         Navigator.pushReplacementNamed(
                                           context,
-                                          '/email_verification',
-                                          arguments: {'email': _emailController.text},
+                                          '/home',
                                         );
                                       }
                                     }

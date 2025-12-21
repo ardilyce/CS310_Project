@@ -343,30 +343,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                         );
 
                                         if (success && context.mounted) {
-                                          // Check if email is verified
-                                          bool isVerified = authProvider.isEmailVerified;
-                                          if (!isVerified) {
-                                            // Show warning and navigate to verification screen
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(
-                                                content: const Text(
-                                                  'Please verify your email address before logging in.',
-                                                ),
-                                                backgroundColor: Colors.orange,
-                                                duration: const Duration(seconds: 3),
-                                              ),
-                                            );
-                                            Navigator.pushReplacementNamed(
-                                              context,
-                                              '/email_verification',
-                                              arguments: {'email': _emailController.text},
-                                            );
-                                          } else {
-                                            Navigator.pushReplacementNamed(
-                                              context,
-                                              '/home',
-                                            );
-                                          }
+                                          // Navigate to home screen
+                                          Navigator.pushReplacementNamed(
+                                            context,
+                                            '/home',
+                                          );
                                         }
                                       }
                                     },

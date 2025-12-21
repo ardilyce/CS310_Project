@@ -15,7 +15,6 @@ import 'screens/settings_screen.dart';
 import 'screens/analysis_results_screen.dart';
 import 'screens/detailed_analysis_screen.dart';
 import 'screens/extracted_text_screen.dart';
-import 'screens/email_verification_screen.dart';
 import 'providers/auth_provider.dart';
 import 'providers/theme_provider.dart';
 import 'utils/firebase_options.dart';
@@ -145,41 +144,13 @@ class MyApp extends StatelessWidget {
                     );
                   }
 
-                  // Check if email is verified (required for protected routes)
-                  if (!user.emailVerified) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (context.mounted) {
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                          '/email_verification',
-                          (route) => false,
-                          arguments: {'email': user.email ?? ''},
-                        );
-                      }
-                    });
-                    return const Scaffold(
-                      body: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
-                  }
-
-                  // User is authenticated and verified, show the protected route
+                  // User is authenticated, show the protected route
                   return _buildWidgetForRoute(settings.name ?? '/home');
                 },
               );
             },
           );
         },
-      );
-    }
-
-    // Handle email_verification route with arguments
-    if (settings.name == '/email_verification') {
-      final args = settings.arguments as Map<String, dynamic>?;
-      return MaterialPageRoute(
-        builder: (context) => EmailVerificationScreen(
-          email: args?['email'] ?? '',
-        ),
       );
     }
 
