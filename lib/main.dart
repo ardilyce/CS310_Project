@@ -37,18 +37,26 @@ void main() async {
     debugPrint('📖 See FIREBASE_SETUP.md for detailed instructions');
   }
 
-  runApp(const MyApp());
+  // Initialize theme provider and load saved preference
+  final themeProvider = ThemeProvider();
+  await themeProvider.loadThemePreference();
+
+  runApp(MyApp(themeProvider: themeProvider));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final ThemeProvider? themeProvider;
+  
+  const MyApp({super.key, this.themeProvider});
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(
+          create: (_) => themeProvider ?? ThemeProvider(),
+        ),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
