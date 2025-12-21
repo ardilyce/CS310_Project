@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../providers/auth_provider.dart';
+import '../services/database_service.dart';
 import '../models/inquiry.dart';
 import 'utility_class.dart';
 
@@ -276,212 +280,118 @@ class PreviousInquiriesScreen extends StatefulWidget {
 }
 
 class _PreviousInquiriesScreenState extends State<PreviousInquiriesScreen> {
-  List<Inquiry> _inquiries = mockInquiries;
+  final DatabaseService _db = DatabaseService();
   SortType _currentSortType = SortType.date;
-  late final PageController _pageController;
-  int _currentPageIndex = 0;
 
   @override
-  void initState() {
-    super.initState();
-    _pageController = PageController();
-    _sortInquiries(); // sort at the start
-  }
+  Widget build(BuildContext context) {
+    // Get the current user ID from your AuthProvider
+    final authProvider = Provider.of<AuthProvider>(context);
+    final userId = authProvider.user?.uid;
 
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Previous Inquiries', style: TextStyle(color: AppUtility.textWhite)),
+        backgroundColor: AppUtility.primaryBlue,
+        iconTheme: IconThemeData(color: AppUtility.textWhite),
+      ),
+      body: userId == null
+          ? const Center(child: Text("Please log in to view history."))
+          : StreamBuilder<QuerySnapshot>(
+        stream: _db.getUserInquiries(userId),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Center(child: Text("Something went wrong"));
+          }
 
-  void _sortInquiries() {
-    // some unnecessary local vars, but still ok
-    List<Inquiry> list = _inquiries;
-    SortType typeNow = _currentSortType;
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-    setState(() {
-      if (typeNow == SortType.date) {
-        list.sort((a, b) {
-          return b.date.compareTo(a.date);
-        });
-      } else {
-        list.sort((a, b) {
-          return b.score.compareTo(a.score);
-        });
-      }
-      _inquiries = list;
-    });
-  }
+          if (snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text("No history found."));
+          }
 
-  int get _numberOfPages {
-    int len = _inquiries.length;
-    int pages = (len / inquiriesPerPage).ceil();
-    return pages;
-  }
+          // Convert Firebase docs to Inquiry objects
+          List<Inquiry> inquiries = snapshot.data!.docs.map((doc) {
+            Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-  Widget _buildInquiryPage(int pageIndex) {
-    int startIndex = pageIndex * inquiriesPerPage;
-    int endIndex = startIndex + inquiriesPerPage;
-
-    if (endIndex > _inquiries.length) {
-      endIndex = _inquiries.length;
-    }
-
-    List<Inquiry> pageInquiries = _inquiries.sublist(startIndex, endIndex);
-
-    List<Widget> cards = [];
-    for (int i = 0; i < pageInquiries.length; i++) {
-      Inquiry inquiry = pageInquiries[i];
-
-      // ==== Delete Using Card ====
-      cards.add(
-        Dismissible(
-          key: ValueKey(inquiry.id),
-          direction: DismissDirection.endToStart,
-          background: Container(
-            color: AppUtility.riskRed,
-            alignment: Alignment.centerRight,
-            padding: const EdgeInsets.only(right: 16),
-            child: Icon(Icons.delete, color: AppUtility.textWhite),
-          ),
-          onDismissed: (direction) {
-            setState(() {
-              _inquiries.remove(inquiry);
-            });
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Inquiry deleted'),
-              ),
+            // Using your positional constructor: id, date, score, message
+            return Inquiry(
+              doc.id,                                          // id
+              (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(), // date
+              (data['score'] as num? ?? 0).toInt(),            // score
+              data['message'] as String?,                      // message
             );
-          },
-          child: Card(
-            // simple Card wrapper; InquiryCard still uses its own padding/margin
-            margin: EdgeInsets.zero,
-            elevation: 2,
-            child: InquiryCard(
-              inquiry: inquiry,
-              onTap: () {
-                _navigateToDetails(inquiry);
-              },
-            ),
-          ),
-        ),
-      );
-      // ===============================================================
-    }
+          }).toList();
 
-    return Column(
-      children: cards,
-    );
-  }
+          // Apply Sorting logic
+          if (_currentSortType == SortType.score) {
+            inquiries.sort((a, b) => b.score.compareTo(a.score));
+          }
 
-  void _navigateToDetails(Inquiry inquiry) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) {
-          return InquiryDetailsScreen(inquiry: inquiry);
+          return Column(
+            children: [
+              _buildSortDropdown(),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: inquiries.length,
+                  itemBuilder: (context, index) {
+                    final inquiry = inquiries[index];
+                    return Dismissible(
+                      key: ValueKey(inquiry.id),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        color: AppUtility.riskRed,
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 20),
+                        child: const Icon(Icons.delete, color: Colors.white),
+                      ),
+                      onDismissed: (direction) {
+                        // Delete from Firebase
+                        FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(userId)
+                            .collection('inquiries')
+                            .doc(inquiry.id)
+                            .delete();
+                      },
+                      child: InquiryCard(
+                        inquiry: inquiry,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => InquiryDetailsScreen(inquiry: inquiry),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
         },
       ),
     );
   }
 
-  void _handleSortChange(SortType? newSortType) {
-    if (newSortType != null) {
-      if (newSortType != _currentSortType) {
-        _currentSortType = newSortType;
-        _sortInquiries();
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    String sortText;
-    if (_currentSortType == SortType.date) {
-      sortText = 'by date';
-    } else {
-      sortText = 'by score';
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Previous Inquiries',
-          style: TextStyle(color: AppUtility.textWhite),
-        ),
-        backgroundColor: AppUtility.primaryBlue,
-        iconTheme: IconThemeData(color: AppUtility.textWhite),
-      ),
-      body: Column(
+  Widget _buildSortDropdown() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                PopupMenuButton<SortType>(
-                  onSelected: _handleSortChange,
-                  itemBuilder: (BuildContext context) {
-                    return <PopupMenuEntry<SortType>>[
-                      const PopupMenuItem(
-                        value: SortType.date,
-                        child: Text('Sort by Date'),
-                      ),
-                      const PopupMenuItem(
-                        value: SortType.score,
-                        child: Text('Sort by Score'),
-                      ),
-                    ];
-                  },
-                  child: Row(
-                    children: [
-                      Text(
-                        sortText,
-                        style: TextStyle(
-                          color: AppUtility.textDark,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Icon(Icons.arrow_drop_down, color: AppUtility.textDark),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: PageView.builder(
-              controller: _pageController,
-              itemCount: _numberOfPages,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentPageIndex = index;
-                });
-              },
-              itemBuilder: (context, index) {
-                return _buildInquiryPage(index);
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(_numberOfPages, (index) {
-                bool isActive = _currentPageIndex == index;
-                return Container(
-                  width: 8.0,
-                  height: 8.0,
-                  margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: isActive
-                        ? AppUtility.primaryBlue
-                        : AppUtility.textGrey,
-                  ),
-                );
-              }),
-            ),
+          Text("Sort by: ", style: TextStyle(color: AppUtility.textGrey)),
+          DropdownButton<SortType>(
+            value: _currentSortType,
+            onChanged: (SortType? newValue) {
+              if (newValue != null) setState(() => _currentSortType = newValue);
+            },
+            items: const [
+              DropdownMenuItem(value: SortType.date, child: Text("Date")),
+              DropdownMenuItem(value: SortType.score, child: Text("Score")),
+            ],
           ),
         ],
       ),
