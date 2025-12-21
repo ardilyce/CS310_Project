@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'utility_class.dart';
 import '../services/analysis_service.dart';
 import 'analyze_screen.dart';
+import '../services/database_service.dart';
+import '../providers/auth_provider.dart';
 
 // This is the new screen you asked for, based on your image.
 class TextInputScreen extends StatefulWidget {
@@ -164,30 +166,23 @@ class _TextInputScreenState extends State<TextInputScreen> {
               width: double.infinity,
               height: 55,
               child: ElevatedButton(
-                onPressed: () async { // MODIFIED THIS FUNCTION TO RUN THE RISK EVALUATION
+                // Inside TextInputScreen's Analyze Button onPressed:
+                onPressed: () async {
                   if (_textController.text.trim().isEmpty) {
                     _showTopError("Please enter some text first.");
                     return;
                   }
-                  // Analyses the text using the PhishGuard algorithm
+
                   final AnalysisResult result = AnalysisService.analyzeText(_textController.text);
+                  final User? user = FirebaseAuth.instance.currentUser;
 
-                  final User? user = _auth.currentUser;
                   if (user != null) {
-                    // Conversion for Firebase
-                    List<Map<String, dynamic>> breakdownMap = result.breakdown.map((item) => item.toMap()).toList();
+                    // USE THE SERVICE: Standardized path and field names
+                    await DatabaseService().saveInquiry(
+                      userId: user.uid,
+                      result: result,
+                    );
 
-                    // Upload to Firebase
-                    await _firestore.collection('texts').add({
-                      'text': result.originalText,
-                      'score': result.score,
-                      'riskLevel': result.riskLevel,
-                      'breakdown': breakdownMap, // Saving the details for history!
-                      'createdAt': Timestamp.now(),
-                      'userId': user.uid,
-                    });
-
-                    // We pass the 'result' object as an argument so the next screens don't have to recalculate it.
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -195,7 +190,6 @@ class _TextInputScreenState extends State<TextInputScreen> {
                       ),
                     );
                   } else {
-                    // Handle case where user isn't logged in
                     _showTopError("You need to be logged in to save text.");
                   }
                 },

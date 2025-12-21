@@ -6,8 +6,9 @@ class Inquiry {
   DateTime date;
   int score;
   String? message;
+  final List<dynamic>? breakdown;
 
-  Inquiry(this.id, this.date, this.score, this.message) {}
+  Inquiry(this.id, this.date, this.score, this.message, {this.breakdown});
 
   String inquiryDateGen() {
     // MM/DD/YYyy

@@ -141,97 +141,134 @@ class InquiryDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // reusing same function as card
+    // Determine color based on score
     Color scoreColor = AppUtility.getColorForScore(inquiry.score);
+    String fullMessage = inquiry.message ?? 'No content available.';
 
-    String fullMessage;
-    if (inquiry.message == null) {
-      fullMessage = 'No content available.';
-    } else {
-      fullMessage = inquiry.message!;
+    // 1. Create a list for the main UI components
+    List<Widget> contentChildren = [
+      // Header section
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                inquiry.inquiryDateGen(), // Custom date formatting
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: AppUtility.textDark,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'ID: ${inquiry.id}',
+                style: TextStyle(fontSize: 12, color: AppUtility.textGrey),
+              ),
+            ],
+          ),
+          Container(
+            width: 70,
+            height: 70,
+            decoration: BoxDecoration(color: scoreColor, shape: BoxShape.circle),
+            alignment: Alignment.center,
+            child: Text(
+              inquiry.score.toString(),
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+          ),
+        ],
+      ),
+      const Divider(height: 40),
+
+      // Message Content Section
+      Text(
+        'Phishing Message Content:',
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: AppUtility.textDark,
+        ),
+      ),
+      const SizedBox(height: 12),
+      Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: AppUtility.secondaryBlue,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          fullMessage,
+          style: TextStyle(fontSize: 15, height: 1.5, color: AppUtility.textDark),
+        ),
+      ),
+      const SizedBox(height: 30),
+    ];
+
+    // 2. Add Breakdown items
+    if (inquiry.breakdown != null && inquiry.breakdown!.isNotEmpty) {
+      contentChildren.add(
+        Text(
+          'Analysis Breakdown:',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppUtility.textDark,
+          ),
+        ),
+      );
+      contentChildren.add(const SizedBox(height: 8));
+
+      // Loop through breakdown and add to the list
+      for (var item in inquiry.breakdown!) {
+        contentChildren.add(
+          Card(
+            margin: const EdgeInsets.symmetric(vertical: 4),
+            color: AppUtility.background,
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              side: BorderSide(color: AppUtility.secondaryBlue),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: ListTile(
+              leading: Icon(Icons.warning_amber_rounded, color: scoreColor),
+              title: Text(
+                item['title'] ?? 'Unknown Risk',
+                style: TextStyle(color: AppUtility.textDark, fontWeight: FontWeight.w500),
+              ),
+              trailing: Text(
+                item['points'] ?? '',
+                style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        );
+      }
     }
 
     return Scaffold(
+      backgroundColor: AppUtility.background,
       appBar: AppBar(
-        title: Text(
-          '# Inquiry ID',
-          style: TextStyle(color: AppUtility.textWhite),
-        ),
+        title: const Text('Inquiry Details', style: TextStyle(color: Colors.white)),
         backgroundColor: AppUtility.primaryBlue,
-        iconTheme: IconThemeData(color: AppUtility.textWhite),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Stack(
         children: [
           SingleChildScrollView(
-            padding: EdgeInsets.only(bottom: 80.0),
+            padding: const EdgeInsets.only(bottom: 100.0),
             child: Padding(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            inquiry.inquiryDateGen(),
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: AppUtility.textDark,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            '# Inquiry ID: ${inquiry.id}',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppUtility.textGrey,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          color: scoreColor,
-                          shape: BoxShape.circle,
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          inquiry.score.toString(),
-                          style: TextStyle(
-                            color: AppUtility.textWhite,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 30,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Divider(height: 30),
-                  Text(
-                    'Phishing Message Content:',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppUtility.textDark,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    fullMessage,
-                    style: TextStyle(
-                      fontSize: 15,
-                      height: 1.4,
-                      color: AppUtility.textDark,
-                    ),
-                  ),
-                ],
+                children: contentChildren, // Pass the list we built
               ),
             ),
           ),
@@ -240,26 +277,18 @@ class InquiryDetailsScreen extends StatelessWidget {
             right: 0,
             bottom: 0,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-              color: Theme.of(context).scaffoldBackgroundColor,
+              padding: const EdgeInsets.all(16.0),
+              color: AppUtility.background,
               child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Re-analyzing inquiry...'),
-                    ),
-                  );
-                },
+                onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
+                  minimumSize: const Size(double.infinity, 55),
                   backgroundColor: AppUtility.primaryBlue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: Text(
-                  'Analyze Again',
-                  style: TextStyle(fontSize: 18, color: AppUtility.textWhite),
+                child: const Text(
+                  'Back to History',
+                  style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
             ),
@@ -322,6 +351,7 @@ class _PreviousInquiriesScreenState extends State<PreviousInquiriesScreen> {
               (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(), // date
               (data['score'] as num? ?? 0).toInt(),            // score
               data['message'] as String?,                      // message
+              breakdown: data['breakdown'] as List<dynamic>?,
             );
           }).toList();
 
