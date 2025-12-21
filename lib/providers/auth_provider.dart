@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
@@ -20,24 +19,11 @@ class AuthProvider with ChangeNotifier {
   Stream<User?> get authStateChanges => _authService.authStateChanges;
 
   AuthProvider() {
-    debugPrint('🔧 AuthProvider initialized');
     // Listen to auth state changes
     _authService.authStateChanges.listen((User? user) {
-      debugPrint('═══════════════════════════════════════════════════════════');
-      debugPrint('🔄 AUTH STATE CHANGED');
-      debugPrint('═══════════════════════════════════════════════════════════');
-      debugPrint('👤 User: ${user?.email ?? "null"}');
-      debugPrint('   - UID: ${user?.uid ?? "null"}');
-      debugPrint('   - Previous user: ${_user?.email ?? "null"}');
-      debugPrint('⏰ Timestamp: ${DateTime.now()}');
-      
       _user = user;
       notifyListeners();
-      
-      debugPrint('✅ Auth state updated and listeners notified');
-      debugPrint('═══════════════════════════════════════════════════════════');
     });
-    debugPrint('✅ Auth state listener registered');
   }
 
   // Sign up - creates user and stores data in Firestore
@@ -48,67 +34,38 @@ class AuthProvider with ChangeNotifier {
     required int age,
   }) async {
     try {
-      debugPrint('═══════════════════════════════════════════════════════════');
-      debugPrint('📝 SIGN UP STARTED');
-      debugPrint('═══════════════════════════════════════════════════════════');
-      debugPrint('📧 Email: $email');
-      debugPrint('👤 Name: $name');
-      debugPrint('🎂 Age: $age');
-      debugPrint('⏰ Timestamp: ${DateTime.now()}');
-      
       _setLoading(true);
       _clearError();
       
       // Create Firebase Auth user
-      debugPrint('🔑 Creating Firebase Auth user...');
       UserCredential? userCredential = await _authService.signUpWithEmailAndPassword(
         email: email,
         password: password,
       );
 
       if (userCredential == null) {
-        debugPrint('❌ Failed to create Firebase Auth user (null credential)');
         _setError('Failed to create account. Please try again.');
         _setLoading(false);
         notifyListeners();
-        debugPrint('═══════════════════════════════════════════════════════════');
-        debugPrint('❌ SIGN UP FAILED - NULL CREDENTIAL');
-        debugPrint('═══════════════════════════════════════════════════════════');
         return false;
       }
-
-      debugPrint('✅ Firebase Auth user created:');
-      debugPrint('   - UID: ${userCredential.user?.uid}');
-      debugPrint('   - Email: ${userCredential.user?.email}');
       
       _user = userCredential.user;
 
       // Store user data in Firestore
       if (_user != null && _user!.uid.isNotEmpty) {
-        debugPrint('💾 Storing user data in Firestore...');
         await _databaseService.storeUserData(
           userId: _user!.uid,
           email: email,
           name: name,
           age: age,
         );
-        debugPrint('✅ User data stored');
       }
       
       _setLoading(false);
       notifyListeners();
-      debugPrint('═══════════════════════════════════════════════════════════');
-      debugPrint('🎉 SIGN UP SUCCESS');
-      debugPrint('═══════════════════════════════════════════════════════════');
       return true;
-    } catch (e, stackTrace) {
-      debugPrint('═══════════════════════════════════════════════════════════');
-      debugPrint('❌ SIGN UP ERROR');
-      debugPrint('═══════════════════════════════════════════════════════════');
-      debugPrint('❌ Error: $e');
-      debugPrint('📚 Stack trace:');
-      debugPrint(stackTrace.toString());
-      
+    } catch (e) {
       // Delete Firebase Auth user if it was created
       try {
         if (_user != null) {
@@ -116,7 +73,7 @@ class AuthProvider with ChangeNotifier {
           _user = null;
         }
       } catch (cleanupError) {
-        debugPrint('⚠️ Failed to cleanup Firebase Auth user: $cleanupError');
+        // Silently handle cleanup errors
       }
       
       // Extract error message
@@ -138,49 +95,25 @@ class AuthProvider with ChangeNotifier {
     required String password,
   }) async {
     try {
-      debugPrint('═══════════════════════════════════════════════════════════');
-      debugPrint('🔐 SIGN IN STARTED');
-      debugPrint('═══════════════════════════════════════════════════════════');
-      debugPrint('📧 Email: $email');
-      debugPrint('⏰ Timestamp: ${DateTime.now()}');
-      
       _setLoading(true);
       _clearError();
       
-      debugPrint('🔑 Attempting to sign in with Firebase Auth...');
       UserCredential? userCredential = await _authService.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
       if (userCredential != null) {
-        debugPrint('✅ Sign in successful!');
-        debugPrint('   - User UID: ${userCredential.user?.uid}');
-        debugPrint('   - User email: ${userCredential.user?.email}');
-        
         _user = userCredential.user;
         
         _setLoading(false);
         notifyListeners();
-        debugPrint('═══════════════════════════════════════════════════════════');
-        debugPrint('🎉 SIGN IN SUCCESS');
-        debugPrint('═══════════════════════════════════════════════════════════');
         return true;
       }
       
-      debugPrint('❌ Sign in returned null userCredential');
       _setLoading(false);
-      debugPrint('═══════════════════════════════════════════════════════════');
-      debugPrint('❌ SIGN IN FAILED - NULL CREDENTIAL');
-      debugPrint('═══════════════════════════════════════════════════════════');
       return false;
-    } catch (e, stackTrace) {
-      debugPrint('═══════════════════════════════════════════════════════════');
-      debugPrint('❌ SIGN IN ERROR');
-      debugPrint('═══════════════════════════════════════════════════════════');
-      debugPrint('❌ Error: $e');
-      debugPrint('📚 Stack trace:');
-      debugPrint(stackTrace.toString());
+    } catch (e) {
       // Extract the error message from the exception
       String errorMessage = e.toString();
       // Remove "Exception: " prefix if present
@@ -240,7 +173,6 @@ class AuthProvider with ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      debugPrint('❌ Password reset error: $e');
       // Extract the error message from the exception
       String errorMessage = e.toString();
       // Remove "Exception: " prefix if present
