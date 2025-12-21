@@ -26,5 +26,33 @@ class DatabaseService {
     }
   }
 
-}
+  // Saving the Inquiries of the user to the database
+  Future<void> saveInquiry({
+    required String userId,
+    required Map<String, dynamic> inquiryData,
+  }) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('inquiries')
+          .add({
+        ...inquiryData,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      throw 'Failed to save inquiry: $e';
+    }
+  }
 
+  // Fetching the inquirires of a user from the database
+  Stream<QuerySnapshot> getUserInquiries(String userId) {
+    return _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('inquiries')
+        .orderBy('timestamp', descending: true)
+        .snapshots();
+  }
+
+}
