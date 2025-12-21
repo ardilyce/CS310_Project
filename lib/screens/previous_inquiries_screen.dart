@@ -147,7 +147,7 @@ class InquiryDetailsScreen extends StatelessWidget {
 
     // 1. Create a list for the main UI components
     List<Widget> contentChildren = [
-      // Header section
+      // Header section: Date, ID, and Score Circle
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,7 +156,7 @@ class InquiryDetailsScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                inquiry.inquiryDateGen(), // Custom date formatting
+                inquiry.inquiryDateGen(),
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -212,7 +212,7 @@ class InquiryDetailsScreen extends StatelessWidget {
       const SizedBox(height: 30),
     ];
 
-    // 2. Add Breakdown items
+    // 2. Add Breakdown items from the Inquiry model (fetched from Firebase)
     if (inquiry.breakdown != null && inquiry.breakdown!.isNotEmpty) {
       contentChildren.add(
         Text(
@@ -226,7 +226,6 @@ class InquiryDetailsScreen extends StatelessWidget {
       );
       contentChildren.add(const SizedBox(height: 8));
 
-      // Loop through breakdown and add to the list
       for (var item in inquiry.breakdown!) {
         contentChildren.add(
           Card(
@@ -260,40 +259,28 @@ class InquiryDetailsScreen extends StatelessWidget {
         backgroundColor: AppUtility.primaryBlue,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.only(bottom: 100.0),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: contentChildren, // Pass the list we built
-              ),
-            ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: contentChildren,
+        ),
+      ),
+      // Sticky bottom button to return to history
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ElevatedButton(
+          onPressed: () => Navigator.pop(context),
+          style: ElevatedButton.styleFrom(
+            minimumSize: const Size(double.infinity, 55),
+            backgroundColor: AppUtility.primaryBlue,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
-              padding: const EdgeInsets.all(16.0),
-              color: AppUtility.background,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 55),
-                  backgroundColor: AppUtility.primaryBlue,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-                child: const Text(
-                  'Back to History',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
-              ),
-            ),
+          child: const Text(
+            'Back to History',
+            style: TextStyle(fontSize: 18, color: Colors.white),
           ),
-        ],
+        ),
       ),
     );
   }
