@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'utility_class.dart';
+import '../services/analysis_service.dart';
+import 'detailed_analysis_screen.dart';
 
 class AnalysisResultsScreen extends StatelessWidget {
-  // We hardcode the score here for the demo, you can change it to test different colors
-  const AnalysisResultsScreen({super.key});
-  final int score = 70;
+  // The result will be received by the constructor
+  final AnalysisResult result;
+
+  const AnalysisResultsScreen({super.key, required this.result});
 
   @override
   Widget build(BuildContext context) {
+    final int score = result.score;
+    final String risk = result.riskLevel;
     final Color riskColor = AppUtility.getColorForScore(score);
-    final String risk = AppUtility.getRiskForScore(score);
 
     return Scaffold(
       backgroundColor: AppUtility.background,
@@ -35,7 +39,6 @@ class AnalysisResultsScreen extends StatelessWidget {
           children: [
             Spacer(flex: 1),
 
-            // Circular Score
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -104,26 +107,43 @@ class AnalysisResultsScreen extends StatelessWidget {
 
             SizedBox(height: 50),
 
-            RichText(
-              textAlign: TextAlign.center,
-              text: TextSpan(
-                style: TextStyle(
-                  fontSize: 26,
-                  color: AppUtility.textDark,
-                  fontWeight: FontWeight.bold,
+            Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "There is a ",
+                      style: TextStyle(
+                        fontSize: 26,
+                        color: AppUtility.textDark,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      risk,
+                      style: TextStyle(
+                        fontSize: 26,
+                        color: riskColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
-                children: [
-                  TextSpan(text: "There is a "),
-                  TextSpan(
-                    text: risk,
-                    style: TextStyle(color: riskColor),
+                Text(
+                  "that this message is a scam attempt.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 26,
+                    color: AppUtility.textDark,
+                    fontWeight: FontWeight.bold,
                   ),
-                  TextSpan(text: "\nthat this message is a scam attempt."),
-                ],
-              ),
+                ),
+              ],
             ),
 
             SizedBox(height: 20),
+
             Text(
               "You can view a more detailed analysis by tapping below.",
               textAlign: TextAlign.center,
@@ -132,6 +152,7 @@ class AnalysisResultsScreen extends StatelessWidget {
 
             Spacer(flex: 2),
 
+            // Navigation button
             SizedBox(
               width: double.infinity,
               height: 55,
@@ -143,7 +164,13 @@ class AnalysisResultsScreen extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/details');
+                  // Navigate passing the data to the detailed screen
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetailedAnalysisScreen(result: result),
+                    ),
+                  );
                 },
                 child: Text(
                   "Detailed Analysis",
@@ -160,5 +187,4 @@ class AnalysisResultsScreen extends StatelessWidget {
       ),
     );
   }
-
 }

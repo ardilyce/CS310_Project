@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'utility_class.dart';
+import '../services/analysis_service.dart';
 import 'analyze_screen.dart';
 
 // This is the new screen you asked for, based on your image.
@@ -163,21 +164,38 @@ class _TextInputScreenState extends State<TextInputScreen> {
               width: double.infinity,
               height: 55,
               child: ElevatedButton(
-                onPressed: () async {
+                onPressed: () async { // MODIFIED THIS FUNCTION TO RUN THE RISK EVALUATION
                   if (_textController.text.trim().isEmpty) {
                     _showTopError("Please enter some text first.");
                     return;
                   }
-                  
+                  // Analyses the text using the PhishGuard algorithm
+                  final AnalysisResult result = AnalysisService.analyzeText(_textController.text);
+
                   final User? user = _auth.currentUser;
                   if (user != null) {
+                    // Conversion for Firebase
+                    List<Map<String, dynamic>> breakdownMap = result.breakdown.map((item) => item.toMap()).toList();
+
+                    // Upload to Firebase
                     await _firestore.collection('texts').add({
-                      'text': _textController.text,
+                      'text': result.originalText,
+                      'score': result.score,
+                      'riskLevel': result.riskLevel,
+                      'breakdown': breakdownMap, // Saving the details for history!
                       'createdAt': Timestamp.now(),
                       'userId': user.uid,
                     });
-                    Navigator.pushNamed(context, '/analyze');
+
+                    // We pass the 'result' object as an argument so the next screens don't have to recalculate it.
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AnalyzeScreen(result: result),
+                      ),
+                    );
                   } else {
+                    // Handle case where user isn't logged in
                     _showTopError("You need to be logged in to save text.");
                   }
                 },

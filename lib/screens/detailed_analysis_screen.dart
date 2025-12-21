@@ -1,31 +1,21 @@
 import 'package:flutter/material.dart';
 import 'utility_class.dart';
-
-// Model class
-class AnalysisItem {
-  final String title;
-  final String points;
-  AnalysisItem(this.title, this.points);
-}
+import '../services/analysis_service.dart';
 
 class DetailedAnalysisScreen extends StatelessWidget {
-  
-  // We hardcode the score here for the demo, you can change it to test different colors
-  final int score = 70;
+  // The result will be received by the constructor
+  final AnalysisResult result;
 
-  // List Data, will be captured form another file after PhishGuard algorithm runs, these are placeholders
-  final List<AnalysisItem> _items = [
-    AnalysisItem("Suspicious Keywords: 'urgent', 'reset'", "+25"),
-    AnalysisItem("High suspicious word ratio", "+10"),
-    AnalysisItem("Shortened Link detected", "+20"),
-    AnalysisItem("Excessive ALL CAPS Usage", "+10"),
-    AnalysisItem("Excessive Exclamation Mark Usage", "+5"),
-  ];
+  const DetailedAnalysisScreen({super.key, required this.result});
 
   @override
   Widget build(BuildContext context) {
+    final int score = result.score;
+    final String risk = result.riskLevel;
     final Color riskColor = AppUtility.getColorForScore(score);
-    final String risk = AppUtility.getRiskForScore(score);
+
+    // The breakdown of why we got this score
+    final List<AnalysisItem> items = result.breakdown;
 
     return Scaffold(
       backgroundColor: AppUtility.background,
@@ -47,7 +37,7 @@ class DetailedAnalysisScreen extends StatelessWidget {
       body: Column(
         children: [
           SizedBox(height: 20),
-          // Small Header
+
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -72,9 +62,7 @@ class DetailedAnalysisScreen extends StatelessWidget {
                   ),
                 ],
               ),
-
               SizedBox(width: 30),
-
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -113,6 +101,7 @@ class DetailedAnalysisScreen extends StatelessWidget {
               ),
             ],
           ),
+
           Divider(height: 50),
 
           Padding(
@@ -131,11 +120,14 @@ class DetailedAnalysisScreen extends StatelessWidget {
           ),
 
           Divider(height: 20, indent: 20, endIndent: 20),
-          // List of score contributors
+
           Expanded(
-            child: ListView.builder(
-              itemCount: _items.length,
+            child: items.isEmpty
+                ? Center(child: Text("No suspicious elements found."))
+                : ListView.builder(
+              itemCount: items.length,
               itemBuilder: (context, index) {
+                final item = items[index];
                 return Column(
                   children: [
                     ListTile(
@@ -148,14 +140,14 @@ class DetailedAnalysisScreen extends StatelessWidget {
                         color: riskColor,
                       ),
                       title: Text(
-                        _items[index].title,
+                        item.title,
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           color: AppUtility.textDark,
                         ),
                       ),
                       trailing: Text(
-                        _items[index].points,
+                        item.points,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.red,
@@ -195,6 +187,7 @@ class DetailedAnalysisScreen extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 40),
+
                 SizedBox(
                   width: double.infinity,
                   height: 50,
@@ -220,5 +213,4 @@ class DetailedAnalysisScreen extends StatelessWidget {
       ),
     );
   }
-
 }

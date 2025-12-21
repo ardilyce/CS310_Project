@@ -93,9 +93,9 @@ class MyApp extends StatelessWidget {
       '/previous_inquiries',
       '/text_input',
       '/image_upload',
-      '/analyze',
-      '/results',
-      '/details',
+      //'/analyze',
+      //'/results',
+      //'/details',
       '/extracted_text',
       '/learn',
     ];
@@ -173,12 +173,12 @@ class MyApp extends StatelessWidget {
         return const TextInputScreen();
       case '/image_upload':
         return const ImageUploadScreen();
-      case '/analyze':
-        return const AnalyzeScreen();
-      case '/results':
-        return const AnalysisResultsScreen();
-      case '/details':
-        return DetailedAnalysisScreen();
+      //case '/analyze':
+      //  return const AnalyzeScreen();
+      //case '/results':
+      //  return const AnalysisResultsScreen();
+      //case '/details':
+      //  return DetailedAnalysisScreen();
       case '/extracted_text':
         return const ExtractedTextScreen();
       case '/learn':
@@ -209,12 +209,12 @@ class MyApp extends StatelessWidget {
         return MaterialPageRoute(builder: (_) => const TextInputScreen());
       case '/image_upload':
         return MaterialPageRoute(builder: (_) => const ImageUploadScreen());
-      case '/analyze':
-        return MaterialPageRoute(builder: (_) => const AnalyzeScreen());
-      case '/results':
-        return MaterialPageRoute(builder: (_) => const AnalysisResultsScreen());
-      case '/details':
-        return MaterialPageRoute(builder: (_) => DetailedAnalysisScreen());
+      //case '/analyze':
+      //  return MaterialPageRoute(builder: (_) => const AnalyzeScreen());
+      //case '/results':
+      //  return MaterialPageRoute(builder: (_) => const AnalysisResultsScreen());
+      //case '/details':
+      //  return MaterialPageRoute(builder: (_) => DetailedAnalysisScreen());
       case '/extracted_text':
         return MaterialPageRoute(builder: (_) => const ExtractedTextScreen());
       case '/learn':
@@ -272,4 +272,6 @@ class MyApp extends StatelessWidget {
 // Important Note //
 /*
 he InquiryDetailsScreen is NOT to be added to the routes
+Also, analyze, analysis results and detailed analysis are also removed due to them requiring parameters
+in their constructors, and they shouldn't be accessed from pages that aren't right before them anyway
  */

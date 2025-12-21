@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'utility_class.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../services/analysis_service.dart';
+import 'analyze_screen.dart';
 
 class ExtractedTextScreen extends StatefulWidget {
   const ExtractedTextScreen({super.key});
@@ -92,13 +96,45 @@ class _ExtractedTextScreenState extends State<ExtractedTextScreen> {
               width: double.infinity,
               height: 55,
               child: ElevatedButton(
-                onPressed: () {
-                  final confirmedText = _textController.text;
+                onPressed: () async { // MODIFIED THIS FUNCTION TO RUN THE RISK EVALUATION
+                  final textToAnalyze = _textController.text.trim();
 
-                  // burada text'i kullanırsın (save / send / navigate)
-                  print(confirmedText);
+                  if (textToAnalyze.isEmpty) return;
 
-                  Navigator.pushNamed(context, "/analyze");
+                  // Analyses the text using the PhishGuard algorithm
+                  final AnalysisResult result = AnalysisService.analyzeText(textToAnalyze);
+
+                  final User? user = FirebaseAuth.instance.currentUser;
+
+                  if (user != null) {
+                    // Conversion for Firebase
+                    List<Map<String, dynamic>> breakdownMap =
+                    result.breakdown.map((item) => item.toMap()).toList();
+
+                    // Upload to Firebase
+                    await FirebaseFirestore.instance.collection('texts').add({
+                      'text': result.originalText,
+                      'score': result.score,
+                      'riskLevel': result.riskLevel,
+                      'breakdown': breakdownMap, // Now we save the specific risk details too!
+                      'createdAt': Timestamp.now(),
+                      'userId': user.uid,
+                      'source': 'image_scan', // (Optional) Useful to know this came from OCR
+                    });
+
+                    // We pass the 'result' object as an argument so the next screens don't have to recalculate it.
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AnalyzeScreen(result: result),
+                      ),
+                    );
+                  } else {
+                    // Handle case where user isn't logged in
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("You must be logged in to analyze text.")),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppUtility.primaryBlue,

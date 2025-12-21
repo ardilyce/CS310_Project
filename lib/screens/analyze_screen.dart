@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'utility_class.dart';
+import '../services/analysis_service.dart'; // Import the service
+import 'analysis_results_screen.dart';     // Import the next screen
 
 class AnalyzeScreen extends StatefulWidget {
-  const AnalyzeScreen({super.key});
+  // 1. Accept the result in the constructor
+  final AnalysisResult result;
+
+  const AnalyzeScreen({super.key, required this.result});
 
   @override
   State<AnalyzeScreen> createState() => _AnalyzeScreenState();
@@ -12,25 +17,28 @@ class _AnalyzeScreenState extends State<AnalyzeScreen> {
   @override
   void initState() {
     super.initState();
-    // Wait for 1 second and navigate to the analysis results screen
-    Future.delayed(const Duration(seconds: 1), () {
+    // 2. Wait 2 seconds, then navigate manually
+    Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
-        Navigator.pushReplacementNamed(context, '/results');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            // Pass 'widget.result' to the next screen
+            builder: (context) => AnalysisResultsScreen(result: widget.result),
+          ),
+        );
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    // Your existing UI code remains exactly the same...
     return Scaffold(
       body: Container(
-        // Using a gradient to match the background in the image
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              AppUtility.thirdBlue, // dark blue
-              AppUtility.primaryBlue, // light blue
-            ],
+            colors: [AppUtility.thirdBlue, AppUtility.primaryBlue],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -39,31 +47,12 @@ class _AnalyzeScreenState extends State<AnalyzeScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(
-                "assets/images/logo.png",
-                width: 130,
-                height: 130,
-              ),
-
+              Image.asset("assets/images/logo.png", width: 130, height: 130),
               const SizedBox(height: 24),
-
-              // The "Analyzing..." text
-              Text(
-                "Analyzing...",
-                style: TextStyle(
-                  color: AppUtility.textWhite,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-
+              Text("Analyzing...",
+                  style: TextStyle(color: AppUtility.textWhite, fontSize: 22, fontWeight: FontWeight.w600)),
               const SizedBox(height: 40),
-
-              // The circular loading indicator
-              CircularProgressIndicator(
-                color: AppUtility.textWhite,
-                strokeWidth: 5, // Make the line a bit thicker
-              ),
+              CircularProgressIndicator(color: AppUtility.textWhite, strokeWidth: 5),
             ],
           ),
         ),
