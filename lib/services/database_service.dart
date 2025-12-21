@@ -14,6 +14,7 @@ class DatabaseService {
   }) async {
     try {
       await _firestore.collection('users').doc(userId).set({
+        'userId': userId,
         'email': email,
         'name': name,
         'age': age,
