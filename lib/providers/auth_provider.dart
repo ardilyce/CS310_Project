@@ -221,4 +221,44 @@ class AuthProvider with ChangeNotifier {
   void clearError() {
     _clearError();
   }
+
+  
+  // Clear History
+  Future<bool> clearHistory() async {
+    if (_user == null) return false;
+    try {
+      _setLoading(true);
+      await _databaseService.clearUserHistory(_user!.uid);
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      _setError(e.toString());
+      _setLoading(false);
+      return false;
+    }
+  }
+
+  // Delete Account
+  Future<bool> deleteAccount() async {
+    if (_user == null) return false;
+    try {
+      _setLoading(true);
+      String uid = _user!.uid;
+
+      // 1. Delete Firestore data
+      await _databaseService.deleteUserData(uid);
+
+      // 2. Delete Auth user
+      await _user!.delete();
+
+      _user = null;
+      _setLoading(false);
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _setError("Please re-log in before deleting your account for security.");
+      _setLoading(false);
+      return false;
+    }
+  }
 }
