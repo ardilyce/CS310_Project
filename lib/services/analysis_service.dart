@@ -118,9 +118,9 @@ class AnalysisService {
 
     // Determine Risk Level Label
     String risk = "No Risk";
-    if (score > 25 && score < 51) { risk = "Low Risk"; }
-    else if (score > 50 && score < 76) { risk = "Medium Risk"; }
-    else if (score > 75 && score < 101) { risk = "High Risk"; }
+    if (score > 15 && score < 31) { risk = "Low Risk"; }
+    else if (score > 30 && score < 71) { risk = "Medium Risk"; }
+    else if (score > 70 && score < 101) { risk = "High Risk"; }
 
     return AnalysisResult(
         score: score,

@@ -47,16 +47,10 @@ class AppUtility {
   static const Color riskRed = Color(0xFFA12325); // 75-100
 
   static Color getColorForScore(int score) {
-    if (score <= 25) return riskGreen;
-    if (score <= 50) return riskYellow;
-    if (score <= 75) return riskOrange;
+    if (score <= 15) return riskGreen;
+    if (score <= 30) return riskYellow;
+    if (score <= 70) return riskOrange;
     return riskRed;
   }
 
-  static String getRiskForScore(int score) {
-    if (score <= 25) return "no risk";
-    if (score <= 50) return "low risk";
-    if (score <= 75) return "medium risk";
-    return "high risk";
-  }
 }
