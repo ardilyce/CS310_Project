@@ -63,4 +63,30 @@ class DatabaseService {
         .snapshots();
   }
 
+  Future<void> clearUserHistory(String userId) async {
+    try {
+      var snapshots = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('inquiries')
+          .get();
+
+      for (var doc in snapshots.docs) {
+        await doc.reference.delete();
+      }
+    } catch (e) {
+      throw 'Failed to clear history: $e';
+    }
+  }
+
+  // 2. Delete the user document from Firestore
+  Future<void> deleteUserData(String userId) async {
+    try {
+      // Note: This only deletes the Firestore document, not the Auth account
+      await _firestore.collection('users').doc(userId).delete();
+    } catch (e) {
+      throw 'Failed to delete user data: $e';
+    }
+  }
+
 }
