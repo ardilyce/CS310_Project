@@ -98,7 +98,26 @@ class _TextInputScreenState extends State<TextInputScreen> {
   @override
   Widget build(BuildContext context) {
     // Use the same logic as your example to make a square box
-    double size = MediaQuery.of(context).size.width - 48;
+    final media = MediaQuery.of(context);
+
+    final screenWidth = media.size.width;
+    final screenHeight = media.size.height;
+
+    // klavye açıksa > 0 olur
+    final keyboardHeight = media.viewInsets.bottom;
+
+    // AppBar + üst boşluk
+    const appBarAndPadding = kToolbarHeight + 40;
+
+    // kullanılabilir yükseklik
+    final availableHeight = screenHeight - keyboardHeight - appBarAndPadding;
+
+    // kare boyutu: genişliğe VE yüksekliğe göre güvenli
+    final double size = ui.lerpDouble(
+      screenWidth - 48,
+      availableHeight * 0.65,
+      keyboardHeight > 0 ? 1.0 : 0.0,
+    )!;
 
     return Scaffold(
       appBar: AppBar(
