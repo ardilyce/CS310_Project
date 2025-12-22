@@ -8,26 +8,27 @@ class LearnScreen extends StatelessWidget {
     _Tip(
       title: '1. How to Spot a Phishing Email',
       description:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere.',
+          'Be careful with emails that create urgency, like saying your account will be closed. Check the sender’s email address carefully, look for spelling mistakes, and never click links or download files unless you are 100% sure the email is real.',
     ),
     _Tip(
       title: '2. Email Scams',
       description:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere.',
+          'Scam emails often pretend to be from banks, delivery services, or social media platforms. They may ask you to verify your account or reset your password. Real companies usually do not ask for sensitive information by email.',
     ),
     _Tip(
       title: '3. SMS / WhatsApp Scams',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      description:
+          'Scam messages may include suspicious links, prizes, or warnings about blocked accounts. Do not click links from unknown numbers, and never share one-time codes or personal information through messages.',
     ),
     _Tip(
       title: '5. Impersonation',
       description:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sit amet ligula et nunc faucibus porta.',
+          'Attackers may pretend to be a friend, a coworker, or customer support. If someone asks for money, passwords, or codes, verify their identity using another method, such as calling them directly.',
     ),
     _Tip(
       title: '6. Dangerous Websites',
       description:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sit amet ligula et nunc faucibus porta. Vivamus eget quam nec arcu facilisis suscipit non ac lacus. Curabitur id lorem ut est gravida feugiat sed vel elit.',
+          'Avoid websites that look strange, have many pop-ups, or do not use HTTPS. Always check the website address carefully, especially before entering passwords or payment details. Fake websites often look similar to real ones.',
     ),
   ];
 
