@@ -36,6 +36,10 @@ class AnalysisService {
     List<String> totalWordsList = text.trim().split(RegExp(r'\s+'));
     int totalWordCount = totalWordsList.length;
 
+    // We strip the punctuations and split the text into words for precise keyword detection
+    String textWithoutPunctuation = lowerText.replaceAll(RegExp(r'[^\w\s]'), '');
+    List<String> wordsToCheck = textWithoutPunctuation.split(RegExp(r'\s+'));
+
     // Keyword Detection
     List<String> keywords = [
       // Urgency & Action
@@ -52,8 +56,8 @@ class AnalysisService {
       'tax', 'refund', 'payment'
     ];
     int keywordCount = 0;
-    for (String word in keywords) {
-      if (lowerText.contains(word)) {
+    for (String keyword in keywords) {
+      if (wordsToCheck.contains(keyword)) {
         keywordCount++;
       }
     }
