@@ -33,9 +33,24 @@ class AnalysisService {
     int score = 0;
     List<AnalysisItem> items = [];
     String lowerText = text.toLowerCase();
+    List<String> totalWordsList = text.trim().split(RegExp(r'\s+'));
+    int totalWordCount = totalWordsList.length;
 
     // Keyword Detection
-    List<String> keywords = ['urgent', 'verify', 'account', 'suspended', 'password', 'bank', 'winner', 'reset'];
+    List<String> keywords = [
+      // Urgency & Action
+      'urgent', 'verify', 'account', 'suspended', 'immediately', 'act now',
+      'action required', 'limited time', '24 hours',
+
+      // Rewards & Prizes
+      'winner', 'prize', 'win', 'won', 'free', 'gift', 'lottery', 'reward',
+      'cash', 'funds', 'claim',
+
+      // Security & Banking
+      'password', 'bank', 'reset', 'security', 'unauthorized', 'access',
+      'credit card', 'debit', 'ssn', 'social security', 'pin', 'identity',
+      'tax', 'refund', 'payment'
+    ];
     int keywordCount = 0;
     for (String word in keywords) {
       if (lowerText.contains(word)) {
@@ -43,13 +58,39 @@ class AnalysisService {
       }
     }
     if (keywordCount > 0) {
-      int points = keywordCount * 10;
+      int points = (keywordCount * 10).clamp(0, 50);
       score += points;
       items.add(AnalysisItem("Suspicious Keywords ($keywordCount found)", "+$points"));
     }
 
+    // Suspicious Word Ratio Check
+    if (totalWordCount > 0 && keywordCount > 0) {
+      double ratio = keywordCount / totalWordCount;
+
+      // If more than 20% of the words are suspicious
+      if (ratio > 0.20) {
+        score += 25;
+        items.add(AnalysisItem("High Density of Suspicious Words", "+25"));
+      }
+    }
+
+    // Shortened URL Check
+    bool url = false; // This variable is used so we don't double count short links
+    List<String> shorteners = [
+      'bit.ly', 'tinyurl.com', 'is.gd', 'ow.ly', 't.co', 'goo.gl',
+      'rebrand.ly', 'clck.ru', 'tr.im', 'buff.ly'
+    ];
+
+    for (String shortener in shorteners) {
+      if (lowerText.contains(shortener)) {
+        url = true;
+        score += 40;
+        items.add(AnalysisItem("URL Shortener Detected ($shortener)", "+40"));
+      }
+    }
+
     // Link Detection
-    if (lowerText.contains("http") || lowerText.contains("www") || lowerText.contains(".com")) {
+    if (url == false && (lowerText.contains("http") || lowerText.contains("www") || lowerText.contains(".com"))) {
       score += 20;
       items.add(AnalysisItem("Link/URL Detected", "+20"));
     }
