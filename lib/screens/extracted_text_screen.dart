@@ -8,7 +8,9 @@ import '../services/database_service.dart';
 import '../providers/auth_provider.dart';
 
 class ExtractedTextScreen extends StatefulWidget {
-  const ExtractedTextScreen({super.key});
+  final String extractedText;
+
+  const ExtractedTextScreen({super.key, required this.extractedText});
 
   @override
   State<ExtractedTextScreen> createState() => _ExtractedTextScreenState();
@@ -16,19 +18,11 @@ class ExtractedTextScreen extends StatefulWidget {
 
 class _ExtractedTextScreenState extends State<ExtractedTextScreen> {
   final TextEditingController _textController = TextEditingController();
-  bool _isInitialized = false;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    if (!_isInitialized) {
-      final extractedText =
-          ModalRoute.of(context)!.settings.arguments as String;
-
-      _textController.text = extractedText;
-      _isInitialized = true;
-    }
+  void initState() {
+    super.initState();
+    _textController.text = widget.extractedText;
   }
 
   @override
@@ -75,10 +69,7 @@ class _ExtractedTextScreenState extends State<ExtractedTextScreen> {
                     maxLines: null,
                     expands: true,
                     decoration: const InputDecoration(border: InputBorder.none),
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: AppUtility.textDark,
-                    ),
+                    style: TextStyle(fontSize: 15, color: AppUtility.textDark),
                   ),
                 ),
 
@@ -102,7 +93,9 @@ class _ExtractedTextScreenState extends State<ExtractedTextScreen> {
                   final textToAnalyze = _textController.text.trim();
                   if (textToAnalyze.isEmpty) return;
 
-                  final AnalysisResult result = AnalysisService.analyzeText(textToAnalyze);
+                  final AnalysisResult result = AnalysisService.analyzeText(
+                    textToAnalyze,
+                  );
                   final User? user = FirebaseAuth.instance.currentUser;
 
                   if (user != null) {
@@ -120,7 +113,9 @@ class _ExtractedTextScreenState extends State<ExtractedTextScreen> {
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("You must be logged in to analyze text.")),
+                      const SnackBar(
+                        content: Text("You must be logged in to analyze text."),
+                      ),
                     );
                   }
                 },

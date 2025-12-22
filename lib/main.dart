@@ -46,7 +46,7 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   final ThemeProvider? themeProvider;
-  
+
   const MyApp({super.key, this.themeProvider});
 
   @override
@@ -54,9 +54,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(
-          create: (_) => themeProvider ?? ThemeProvider(),
-        ),
+        ChangeNotifierProvider(create: (_) => themeProvider ?? ThemeProvider()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
@@ -64,8 +62,9 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             theme: _buildLightTheme(),
             darkTheme: _buildDarkTheme(),
-            themeMode:
-                themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            themeMode: themeProvider.isDarkMode
+                ? ThemeMode.dark
+                : ThemeMode.light,
             initialRoute: '/splash',
             // Use onGenerateRoute for route protection
             onGenerateRoute: (settings) {
@@ -85,14 +84,12 @@ class MyApp extends StatelessWidget {
   }
 
   // Route generator with authentication protection
-  Route<dynamic> _generateRoute(RouteSettings settings, ThemeProvider themeProvider) {
+  Route<dynamic> _generateRoute(
+    RouteSettings settings,
+    ThemeProvider themeProvider,
+  ) {
     // Public routes (accessible without authentication)
-    final publicRoutes = [
-      '/splash',
-      '/login',
-      '/signup',
-      '/forget_password',
-    ];
+    final publicRoutes = ['/splash', '/login', '/signup', '/forget_password'];
 
     // Protected routes (require authentication)
     final protectedRoutes = [
@@ -104,7 +101,7 @@ class MyApp extends StatelessWidget {
       //'/analyze',
       //'/results',
       //'/details',
-      '/extracted_text',
+      //'/extracted_text',
       '/learn',
     ];
 
@@ -126,9 +123,7 @@ class MyApp extends StatelessWidget {
                   // Show loading while checking auth state
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Scaffold(
-                      body: Center(
-                        child: CircularProgressIndicator(),
-                      ),
+                      body: Center(child: CircularProgressIndicator()),
                     );
                   }
 
@@ -139,16 +134,13 @@ class MyApp extends StatelessWidget {
                     // Use WidgetsBinding to ensure navigation happens after build
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       if (context.mounted) {
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                          '/login',
-                          (route) => false,
-                        );
+                        Navigator.of(
+                          context,
+                        ).pushNamedAndRemoveUntil('/login', (route) => false);
                       }
                     });
                     return const Scaffold(
-                      body: Center(
-                        child: CircularProgressIndicator(),
-                      ),
+                      body: Center(child: CircularProgressIndicator()),
                     );
                   }
 
@@ -163,9 +155,7 @@ class MyApp extends StatelessWidget {
     }
 
     // Unknown route, redirect to splash
-    return MaterialPageRoute(
-      builder: (context) => const SplashScreen(),
-    );
+    return MaterialPageRoute(builder: (context) => const SplashScreen());
   }
 
   // Build widget for route (used in StreamBuilder)
@@ -187,8 +177,8 @@ class MyApp extends StatelessWidget {
       //  return const AnalysisResultsScreen();
       //case '/details':
       //  return DetailedAnalysisScreen();
-      case '/extracted_text':
-        return const ExtractedTextScreen();
+      //case '/extracted_text':
+      //  return const ExtractedTextScreen();
       case '/learn':
         return const LearnScreen();
       default:
@@ -197,7 +187,10 @@ class MyApp extends StatelessWidget {
   }
 
   // Build route based on route name
-  Route<dynamic> _buildRoute(RouteSettings settings, ThemeProvider themeProvider) {
+  Route<dynamic> _buildRoute(
+    RouteSettings settings,
+    ThemeProvider themeProvider,
+  ) {
     switch (settings.name) {
       case '/splash':
         return MaterialPageRoute(builder: (_) => const SplashScreen());
@@ -212,7 +205,9 @@ class MyApp extends StatelessWidget {
       case '/settings':
         return MaterialPageRoute(builder: (_) => const SettingsScreen());
       case '/previous_inquiries':
-        return MaterialPageRoute(builder: (_) => const PreviousInquiriesScreen());
+        return MaterialPageRoute(
+          builder: (_) => const PreviousInquiriesScreen(),
+        );
       case '/text_input':
         return MaterialPageRoute(builder: (_) => const TextInputScreen());
       case '/image_upload':
@@ -223,8 +218,8 @@ class MyApp extends StatelessWidget {
       //  return MaterialPageRoute(builder: (_) => const AnalysisResultsScreen());
       //case '/details':
       //  return MaterialPageRoute(builder: (_) => DetailedAnalysisScreen());
-      case '/extracted_text':
-        return MaterialPageRoute(builder: (_) => const ExtractedTextScreen());
+      //case '/extracted_text':
+      //  return MaterialPageRoute(builder: (_) => const ExtractedTextScreen());
       case '/learn':
         return MaterialPageRoute(builder: (_) => const LearnScreen());
       default:

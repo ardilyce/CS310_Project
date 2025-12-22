@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import "utility_class.dart";
 import 'login_screen.dart';
+import 'extracted_text_screen.dart';
 import '../utils/ocr_utility.dart';
 
 class ImageUploadScreen extends StatefulWidget {
@@ -188,10 +189,12 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
                     _selectedImage!,
                   );
 
-                  Navigator.pushNamed(
+                  Navigator.push(
                     context,
-                    "/extracted_text",
-                    arguments: extractedText,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          ExtractedTextScreen(extractedText: extractedText),
+                    ),
                   );
                 },
 

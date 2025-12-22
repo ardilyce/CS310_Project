@@ -173,7 +173,9 @@ class _TextInputScreenState extends State<TextInputScreen> {
                     return;
                   }
 
-                  final AnalysisResult result = AnalysisService.analyzeText(_textController.text);
+                  final AnalysisResult result = AnalysisService.analyzeText(
+                    _textController.text,
+                  );
                   final User? user = FirebaseAuth.instance.currentUser;
 
                   if (user != null) {
