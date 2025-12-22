@@ -113,13 +113,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
               width: double.infinity,
               height: 55,
               child: ElevatedButton(
-                onPressed: () {
-                  // will add actual clear later
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Clear history will come soon.'),
+                onPressed: () async {
+                  final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Clear History'),
+                      content: const Text('This will delete all your past inquiries. Continue?'),
+                      actions: [
+                        TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+                        TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Clear', style: TextStyle(color: Colors.red))),
+                      ],
                     ),
                   );
+
+                  if (confirm == true && mounted) {
+                    bool success = await authProvider.clearHistory();
+                    if (success && mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('History cleared successfully.')),
+                      );
+                    }
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppUtility.secondaryBlue,
@@ -237,13 +253,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: () {
-                      // delete later (danger!)
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Delete account will come soon.'),
+                    onPressed: () async {
+                      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Delete Account'),
+                          content: const Text('This action is permanent and will delete all your data.'),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+                            TextButton(
+                                onPressed: () => Navigator.pop(context, true),
+                                child: const Text('Delete Everything', style: TextStyle(color: Colors.red))
+                            ),
+                          ],
                         ),
                       );
+
+                      if (confirm == true && mounted) {
+                        bool success = await authProvider.deleteAccount();
+                        if (success && mounted) {
+                          Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+                        } else if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(authProvider.errorMessage ?? 'Error deleting account')),
+                          );
+                        }
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFB00000),
