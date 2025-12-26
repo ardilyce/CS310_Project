@@ -1,30 +1,83 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:project/main.dart';
+import 'package:project/screens/analysis_results_screen.dart';
+import 'package:project/screens/detailed_analysis_screen.dart';
+import 'package:project/services/analysis_service.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('AnalysisResultsScreen shows score and risk label', (tester) async {
+    final result = AnalysisResult(
+      score: 42,
+      riskLevel: 'Medium Risk',
+      breakdown: [AnalysisItem('Suspicious Keywords (2 found)', '+20')],
+      originalText: 'Test message',
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    await tester.pumpWidget(
+      MaterialApp(home: AnalysisResultsScreen(result: result)),
+    );
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    expect(find.text('Analysis Results'), findsOneWidget);
+    expect(find.text('42'), findsOneWidget);
+    expect(find.text('Medium Risk'), findsOneWidget);
+  });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  testWidgets('AnalysisResultsScreen navigates to DetailedAnalysisScreen', (tester) async {
+    final result = AnalysisResult(
+      score: 55,
+      riskLevel: 'Medium Risk',
+      breakdown: [AnalysisItem('Link/URL Detected', '+20')],
+      originalText: 'Test message',
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(home: AnalysisResultsScreen(result: result)),
+    );
+
+    await tester.tap(find.text('Detailed Analysis'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(DetailedAnalysisScreen), findsOneWidget);
+    expect(find.text('Detailed Analysis'), findsOneWidget);
+  });
+
+  testWidgets('DetailedAnalysisScreen shows empty state when no items', (tester) async {
+    final result = AnalysisResult(
+      score: 5,
+      riskLevel: 'No Risk',
+      breakdown: const [],
+      originalText: 'Safe message',
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(home: DetailedAnalysisScreen(result: result)),
+    );
+
+    expect(find.text('No suspicious elements found.'), findsOneWidget);
+  });
+
+  testWidgets('DetailedAnalysisScreen navigates to previous inquiries route', (tester) async {
+    final result = AnalysisResult(
+      score: 40,
+      riskLevel: 'Medium Risk',
+      breakdown: [AnalysisItem('Link/URL Detected', '+20')],
+      originalText: 'Test message',
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        routes: {
+          '/previous_inquiries': (context) => const Scaffold(
+                body: Text('Previous Inquiries Screen'),
+              ),
+        },
+        home: DetailedAnalysisScreen(result: result),
+      ),
+    );
+
+    await tester.tap(find.text('See Previous Results'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Previous Inquiries Screen'), findsOneWidget);
   });
 }
