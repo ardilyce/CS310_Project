@@ -117,6 +117,24 @@ If you are on the shared team project, follow the detailed steps in `FIREBASE_SE
 
 ---
 
+# Firebase Rules And Indexes
+
+This project includes Firestore rules and indexes in the root of the repo:
+- Firestore security rules: `firestore.rules`
+- Firestore indexes: `firestore.indexes.json` (currently empty)
+
+To apply them in your Firebase project:
+```bash
+firebase deploy --only firestore:rules,firestore:indexes
+```
+
+Rules summary:
+- `users/{userId}`: users can read/write only their own document.
+- `inquiries/{inquiryId}`: users can read/write only their own inquiries, tracked by `createdBy`.
+- `reports/{reportId}`: authenticated users can read, create, and update/delete their own reports.
+
+---
+
 # Running Tests
 
 Run all tests:
