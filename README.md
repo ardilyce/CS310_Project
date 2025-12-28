@@ -9,9 +9,13 @@
 # Table of Contents
 
 - [About The Project](#about-the-project)
+- [Project Motivation](#project-motivation)
 - [Core Features](#core-features)
 - [Technology Stack](#technology-stack)
 - [Getting Started](#getting-started)
+- [Running The App](#running-the-app)
+- [Running Tests](#running-tests)
+- [Known Limitations And Bugs](#known-limitations-and-bugs)
 - [Methodology](#methodology)
 - [The Team](#the-team)
 
@@ -20,6 +24,12 @@
 # About The Project
 
 To combat the growing threat of phishing, **PhishGuard** offers an immediate first line of defense. Our mobile app allows you to quickly analyze suspicious messages by pasting text or uploading a screenshot. In seconds, you get a clear risk score from 0 to 100, empowering you to identify and avoid dangerous scams before you click.
+
+---
+
+# Project Motivation
+
+Phishing is one of the most common and damaging forms of social engineering, and many users do not have the tools to quickly evaluate whether a message is safe. We built PhishGuard to provide a fast, explainable analysis that helps users make better decisions without requiring advanced security knowledge.
 
 ---
 
@@ -55,35 +65,77 @@ We are building PhishGuard using a modern, cross-platform technology stack to en
 To contribute to or run this project, you will need the following software installed on your machine:
 
 * Flutter SDK: [Installation Guide](https://docs.flutter.dev/get-started/install)
+  - Use a Flutter version that supports Dart `^3.9.2` (see `pubspec.yaml`).
 * An editor like VS Code or Android Studio.
 * A configured Firebase project to connect with the application.
 
-## Ekip Kurulumu
+## Team Setup
 
-**Önemli:** Bu proje 6 kişilik bir ekip tarafından geliştirilmektedir. Her ekip üyesinin kendi Firebase projesini kullanması gerekmektedir.
+**Important:** This project is being developed by a 6-person team. Each team member must use their own Firebase project.
 
-Detaylı kurulum talimatları için **[TEAM_SETUP.md](TEAM_SETUP.md)** dosyasına bakın.
+For detailed setup instructions, see **[FIREBASE_SETUP_TEAM.md](FIREBASE_SETUP_TEAM.md)**.
 
-### Hızlı Başlangıç
+### Quick Start
 
-1. Projeyi klonlayın ve bağımlılıkları yükleyin:
+1. Clone the project and install dependencies:
    ```bash
    git clone <repository-url>
    cd CS310_Project/CS310_Project
    flutter pub get
    ```
 
-2. Firebase projenizi oluşturun ve bağlayın:
+2. Create and connect your Firebase project:
    ```bash
    dart pub global run flutterfire_cli:flutterfire configure
    ```
 
-3. Uygulamayı çalıştırın:
+3. Run the app:
    ```bash
    flutter run
    ```
 
-**Not:** `firebase_options.dart` dosyası Git'e commit edilmez. Her ekip üyesi kendi dosyasını oluşturmalıdır.
+**Note:** `firebase_options.dart` is not committed to Git. Each team member must generate their own file.
+
+---
+
+# Running The App
+
+1. Install dependencies:
+   ```bash
+   flutter pub get
+   ```
+2. Configure Firebase:
+   - Android: place `google-services.json` in `android/app/`.
+   - Ensure `lib/utils/firebase_options.dart` is populated (run `flutterfire configure` or copy values from your Firebase project).
+   - Enable Email/Password auth and create Firestore in Firebase Console.
+3. Run the app on a device or emulator:
+   ```bash
+   flutter run
+   ```
+
+If you are on the shared team project, follow the detailed steps in `FIREBASE_SETUP_TEAM.md`.
+
+---
+
+# Running Tests
+
+Run all tests:
+```bash
+flutter test
+```
+
+Test coverage overview:
+- `test/widget_test.dart`: UI smoke tests for Analysis Results and Detailed Analysis screens, including navigation and empty-state rendering.
+- `test/unit/analysis_service_test.dart`: unit tests for scoring behavior in `AnalysisService` across keywords, links, casing, and neutral input.
+- `test/unit/app_utility_test.dart`: unit tests for color thresholds used in risk level display.
+- `test/unit/inquiry_test.dart`: unit tests for `Inquiry` date formatting and mock factory field assignment.
+
+---
+
+# Known Limitations And Bugs
+
+- Emulator keyboard rendering issue: when the on-screen keyboard opens in some emulators, the middle part of the screen can stop repainting and appear frozen.
+- Early keyword detection bug: the analyzer previously matched subwords (e.g., detecting `win` inside `following`), which could inflate scores and cause false positives.
 
 ---
 
