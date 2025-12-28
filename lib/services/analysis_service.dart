@@ -50,6 +50,11 @@ class AnalysisService {
       'winner', 'prize', 'win', 'won', 'free', 'gift', 'lottery', 'reward',
       'cash', 'funds', 'claim',
 
+      // High-Risk Terms
+      'otp', '2fa', 'mfa', 'iban', 'ssn', 'routing', 'wire', 'transfer',
+      'crypto', 'wallet', 'giftcard', 'verification', 'code', 'locked',
+      'billing', 'invoice', 'login', 'signin',
+
       // Security & Banking
       'password', 'bank', 'reset', 'security', 'unauthorized', 'access',
       'credit card', 'debit', 'ssn', 'social security', 'pin', 'identity',
