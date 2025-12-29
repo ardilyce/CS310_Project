@@ -188,7 +188,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const SizedBox(height: 12),
                   TextField(
                     controller: _emailController,
-                    enabled: !_isLoadingProfile && !_isUpdatingProfile,
+                    enabled: false,
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       labelText: 'Email',
