@@ -276,7 +276,10 @@ class AuthProvider with ChangeNotifier {
     required String email,
     String? currentPassword,
   }) async {
-    if (_user == null) return false;
+    if (_user == null) {
+      _setError('You are not signed in. Please log in again.');
+      return false;
+    }
     try {
       _setLoading(true);
       _clearError();
@@ -292,28 +295,47 @@ class AuthProvider with ChangeNotifier {
       }
 
       if (trimmedEmail != (_user?.email ?? '')) {
+        if (currentPassword == null || currentPassword.isEmpty) {
+          _requiresRecentLogin = true;
+          _setError('Please enter your password to update your email.');
+          _setLoading(false);
+          return false;
+        }
+
+        final String? currentEmail = _user!.email;
+        if (currentEmail == null || currentEmail.isEmpty) {
+          throw 'Unable to verify your email. Please log in again.';
+        }
+
+        final credential = EmailAuthProvider.credential(
+          email: currentEmail,
+          password: currentPassword,
+        );
+
         try {
+          await _user!.reauthenticateWithCredential(credential);
           await _user!.updateEmail(trimmedEmail);
         } on FirebaseAuthException catch (e) {
-          if (e.code == 'requires-recent-login') {
-            if (currentPassword == null || currentPassword.isEmpty) {
+          switch (e.code) {
+            case 'wrong-password':
+            case 'invalid-credential':
+              throw 'Incorrect password. Please try again.';
+            case 'invalid-email':
+              throw 'The email address is invalid.';
+            case 'email-already-in-use':
+              throw 'That email is already in use.';
+            case 'operation-not-allowed':
+              throw 'Email/password sign-in is disabled for this project.';
+            case 'requires-recent-login':
               _requiresRecentLogin = true;
               throw 'Please re-enter your password to update your email.';
-            }
-
-            final String? currentEmail = _user!.email;
-            if (currentEmail == null || currentEmail.isEmpty) {
-              throw 'Unable to verify your email. Please log in again.';
-            }
-
-            final credential = EmailAuthProvider.credential(
-              email: currentEmail,
-              password: currentPassword,
-            );
-            await _user!.reauthenticateWithCredential(credential);
-            await _user!.updateEmail(trimmedEmail);
-          } else {
-            throw e;
+            case 'user-mismatch':
+            case 'user-not-found':
+              throw 'Please log in again before updating your email.';
+            case 'network-request-failed':
+              throw 'Network error. Please check your internet connection.';
+            default:
+              throw e.message ?? 'Failed to update email. Please try again.';
           }
         }
       }

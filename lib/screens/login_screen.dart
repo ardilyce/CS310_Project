@@ -18,6 +18,16 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscurePassword = true;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        Provider.of<AuthProvider>(context, listen: false).clearError();
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
@@ -336,6 +346,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               onPressed: authProvider.isLoading
                                   ? null
                                   : () async {
+                                      authProvider.clearError();
                                       if (_formKey.currentState!.validate()) {
                                         bool success = await authProvider.signIn(
                                           email: _emailController.text,

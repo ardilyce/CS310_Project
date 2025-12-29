@@ -15,8 +15,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _keepHistory = true;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   bool _isLoadingProfile = false;
   bool _isUpdatingProfile = false;
+  bool _obscurePassword = true;
 
   @override
   void initState() {
@@ -30,6 +32,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
@@ -65,28 +68,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _saveProfile() async {
-    setState(() {
-      _isUpdatingProfile = true;
-    });
-
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final bool emailChanged =
         _emailController.text.trim() != (authProvider.user?.email ?? '');
-    bool success = await authProvider.updateUserProfile(
+    final String password = emailChanged ? _passwordController.text : '';
+    if (emailChanged && password.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter your password to update your email.'),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isUpdatingProfile = true;
+    });
+    final bool success = await authProvider.updateUserProfile(
       name: _nameController.text,
       email: _emailController.text,
+      currentPassword: password,
     );
-
-    if (!success && authProvider.requiresRecentLogin && emailChanged && mounted) {
-      final String? password = await _promptForPassword();
-      if (password != null && password.isNotEmpty) {
-        success = await authProvider.updateUserProfile(
-          name: _nameController.text,
-          email: _emailController.text,
-          currentPassword: password,
-        );
-      }
-    }
 
     if (!mounted) return;
 
@@ -94,46 +96,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _isUpdatingProfile = false;
     });
 
+    final messenger = ScaffoldMessenger.of(context);
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         const SnackBar(content: Text('Profile updated successfully.')),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(authProvider.errorMessage ?? 'Failed to update profile.')),
+      final String message = authProvider.errorMessage ?? 'Failed to update profile.';
+      messenger.showSnackBar(
+        SnackBar(content: Text(message)),
       );
     }
-  }
-
-  Future<String?> _promptForPassword() async {
-    final TextEditingController passwordController = TextEditingController();
-
-    final String? password = await showDialog<String>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Re-authentication required'),
-        content: TextField(
-          controller: passwordController,
-          obscureText: true,
-          decoration: const InputDecoration(
-            labelText: 'Current password',
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, passwordController.text),
-            child: const Text('Continue'),
-          ),
-        ],
-      ),
-    );
-
-    passwordController.dispose();
-    return password;
   }
 
   @override
@@ -201,6 +174,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
+                  TextField(
+                    controller: _passwordController,
+                    enabled: !_isLoadingProfile && !_isUpdatingProfile,
+                    obscureText: _obscurePassword,
+                    decoration: InputDecoration(
+                      labelText: 'Current password (required to change email)',
+                      filled: true,
+                      fillColor: AppUtility.background,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: BorderSide.none,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity,
                     height: 48,
@@ -225,8 +223,48 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                               ),
-                            ),
+                      ),
                     ),
+                  ),
+                  const SizedBox(height: 8),
+                  Consumer<AuthProvider>(
+                    builder: (context, authProvider, child) {
+                      final String? error = authProvider.errorMessage;
+                      if (error == null || error.isEmpty) {
+                        return const SizedBox.shrink();
+                      }
+                      return Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFEBEE),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.red, width: 1),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.error_outline, color: Colors.red, size: 18),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                error,
+                                style: const TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.close, color: Colors.red, size: 16),
+                              onPressed: () {
+                                authProvider.clearError();
+                              },
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
