@@ -70,10 +70,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final success = await authProvider.updateUserProfile(
+    final bool emailChanged =
+        _emailController.text.trim() != (authProvider.user?.email ?? '');
+    bool success = await authProvider.updateUserProfile(
       name: _nameController.text,
       email: _emailController.text,
     );
+
+    if (!success && authProvider.requiresRecentLogin && emailChanged && mounted) {
+      final String? password = await _promptForPassword();
+      if (password != null && password.isNotEmpty) {
+        success = await authProvider.updateUserProfile(
+          name: _nameController.text,
+          email: _emailController.text,
+          currentPassword: password,
+        );
+      }
+    }
 
     if (!mounted) return;
 
@@ -90,6 +103,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
         SnackBar(content: Text(authProvider.errorMessage ?? 'Failed to update profile.')),
       );
     }
+  }
+
+  Future<String?> _promptForPassword() async {
+    final TextEditingController passwordController = TextEditingController();
+
+    final String? password = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Re-authentication required'),
+        content: TextField(
+          controller: passwordController,
+          obscureText: true,
+          decoration: const InputDecoration(
+            labelText: 'Current password',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, passwordController.text),
+            child: const Text('Continue'),
+          ),
+        ],
+      ),
+    );
+
+    passwordController.dispose();
+    return password;
   }
 
   @override

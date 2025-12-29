@@ -9,11 +9,13 @@ class AuthProvider with ChangeNotifier {
   User? _user;
   bool _isLoading = false;
   String? _errorMessage;
+  bool _requiresRecentLogin = false;
 
   User? get user => _user;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isAuthenticated => _user != null;
+  bool get requiresRecentLogin => _requiresRecentLogin;
   
   // Expose auth state changes stream for real-time route protection
   Stream<User?> get authStateChanges => _authService.authStateChanges;
@@ -272,11 +274,13 @@ class AuthProvider with ChangeNotifier {
   Future<bool> updateUserProfile({
     required String name,
     required String email,
+    String? currentPassword,
   }) async {
     if (_user == null) return false;
     try {
       _setLoading(true);
       _clearError();
+      _requiresRecentLogin = false;
 
       final String trimmedName = name.trim();
       final String trimmedEmail = email.trim();
@@ -288,7 +292,30 @@ class AuthProvider with ChangeNotifier {
       }
 
       if (trimmedEmail != (_user?.email ?? '')) {
-        await _user!.updateEmail(trimmedEmail);
+        try {
+          await _user!.updateEmail(trimmedEmail);
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'requires-recent-login') {
+            if (currentPassword == null || currentPassword.isEmpty) {
+              _requiresRecentLogin = true;
+              throw 'Please re-enter your password to update your email.';
+            }
+
+            final String? currentEmail = _user!.email;
+            if (currentEmail == null || currentEmail.isEmpty) {
+              throw 'Unable to verify your email. Please log in again.';
+            }
+
+            final credential = EmailAuthProvider.credential(
+              email: currentEmail,
+              password: currentPassword,
+            );
+            await _user!.reauthenticateWithCredential(credential);
+            await _user!.updateEmail(trimmedEmail);
+          } else {
+            throw e;
+          }
+        }
       }
 
       await _user!.updateDisplayName(trimmedName);
