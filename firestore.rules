@@ -19,6 +19,11 @@ service cloud.firestore {
       
       // Users can create their own user document during registration
       allow create: if isAuthenticated() && request.auth.uid == userId;
+
+      // User inquiries subcollection
+      match /inquiries/{inquiryId} {
+        allow read, write: if isOwner(userId);
+      }
     }
     
     // Inquiries collection - users can only access their own inquiries
@@ -62,4 +67,3 @@ service cloud.firestore {
     }
   }
 }
-
