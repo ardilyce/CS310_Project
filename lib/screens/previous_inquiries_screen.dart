@@ -339,6 +339,7 @@ class _PreviousInquiriesScreenState extends State<PreviousInquiriesScreen> {
               (data['score'] as num? ?? 0).toInt(),            // score
               data['message'] as String?,                      // message
               breakdown: data['breakdown'] as List<dynamic>?,
+              riskLevel: data['riskLevel'] as String?,
             );
           }).toList();
 
