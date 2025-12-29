@@ -13,6 +13,84 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _keepHistory = true;
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  bool _isLoadingProfile = false;
+  bool _isUpdatingProfile = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadProfile();
+    });
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadProfile() async {
+    setState(() {
+      _isLoadingProfile = true;
+    });
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final profile = await authProvider.getUserProfile();
+
+    if (!mounted) return;
+
+    final String? email = authProvider.user?.email;
+    if (email != null && email.isNotEmpty) {
+      _emailController.text = email;
+    }
+
+    if (profile != null) {
+      final dynamic name = profile['name'];
+      final dynamic storedEmail = profile['email'];
+      if (name is String && name.isNotEmpty) {
+        _nameController.text = name;
+      }
+      if (_emailController.text.isEmpty && storedEmail is String && storedEmail.isNotEmpty) {
+        _emailController.text = storedEmail;
+      }
+    }
+
+    setState(() {
+      _isLoadingProfile = false;
+    });
+  }
+
+  Future<void> _saveProfile() async {
+    setState(() {
+      _isUpdatingProfile = true;
+    });
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final success = await authProvider.updateUserProfile(
+      name: _nameController.text,
+      email: _emailController.text,
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      _isUpdatingProfile = false;
+    });
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Profile updated successfully.')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(authProvider.errorMessage ?? 'Failed to update profile.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +107,89 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: Column(
         children: [
           const SizedBox(height: 20),
+
+          // Profile settings
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Container(
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: AppUtility.secondaryBlue,
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Profile',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppUtility.textDark,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _nameController,
+                    enabled: !_isLoadingProfile && !_isUpdatingProfile,
+                    decoration: InputDecoration(
+                      labelText: 'Name',
+                      filled: true,
+                      fillColor: AppUtility.background,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _emailController,
+                    enabled: !_isLoadingProfile && !_isUpdatingProfile,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      filled: true,
+                      fillColor: AppUtility.background,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: (_isLoadingProfile || _isUpdatingProfile) ? null : _saveProfile,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppUtility.thirdBlue,
+                        disabledBackgroundColor: Colors.grey,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      child: _isUpdatingProfile
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Text(
+                              'Save Profile',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 16),
 
           // Dark Mode row
           Padding(

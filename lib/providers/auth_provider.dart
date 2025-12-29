@@ -26,6 +26,14 @@ class AuthProvider with ChangeNotifier {
     });
   }
 
+  String _extractErrorMessage(Object error) {
+    String message = error.toString();
+    if (message.startsWith('Exception: ')) {
+      message = message.substring(11);
+    }
+    return message;
+  }
+
   // Sign up - creates user and stores data in Firestore
   Future<bool> signUp({
     required String email,
@@ -77,10 +85,7 @@ class AuthProvider with ChangeNotifier {
       }
       
       // Extract error message
-      String errorMessage = e.toString();
-      if (errorMessage.startsWith('Exception: ')) {
-        errorMessage = errorMessage.substring(11);
-      }
+      String errorMessage = _extractErrorMessage(e);
       
       _setError(errorMessage);
       _setLoading(false);
@@ -115,11 +120,7 @@ class AuthProvider with ChangeNotifier {
       return false;
     } catch (e) {
       // Extract the error message from the exception
-      String errorMessage = e.toString();
-      // Remove "Exception: " prefix if present
-      if (errorMessage.startsWith('Exception: ')) {
-        errorMessage = errorMessage.substring(11);
-      }
+      String errorMessage = _extractErrorMessage(e);
       // Handle all credential-related errors with a simple, user-friendly message
       String lowerMessage = errorMessage.toLowerCase();
       if (lowerMessage.contains('wrong-password') || 
@@ -174,11 +175,7 @@ class AuthProvider with ChangeNotifier {
       return true;
     } catch (e) {
       // Extract the error message from the exception
-      String errorMessage = e.toString();
-      // Remove "Exception: " prefix if present
-      if (errorMessage.startsWith('Exception: ')) {
-        errorMessage = errorMessage.substring(11);
-      }
+      String errorMessage = _extractErrorMessage(e);
       // Handle common password reset errors
       String lowerMessage = errorMessage.toLowerCase();
       if (lowerMessage.contains('user-not-found') || 
@@ -257,6 +254,58 @@ class AuthProvider with ChangeNotifier {
       return true;
     } catch (e) {
       _setError("Please re-log in before deleting your account for security.");
+      _setLoading(false);
+      return false;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getUserProfile() async {
+    if (_user == null) return null;
+    try {
+      return await _databaseService.getUserData(_user!.uid);
+    } catch (e) {
+      _setError(_extractErrorMessage(e));
+      return null;
+    }
+  }
+
+  Future<bool> updateUserProfile({
+    required String name,
+    required String email,
+  }) async {
+    if (_user == null) return false;
+    try {
+      _setLoading(true);
+      _clearError();
+
+      final String trimmedName = name.trim();
+      final String trimmedEmail = email.trim();
+
+      if (trimmedName.isEmpty || trimmedEmail.isEmpty) {
+        _setError('Name and email are required.');
+        _setLoading(false);
+        return false;
+      }
+
+      if (trimmedEmail != (_user?.email ?? '')) {
+        await _user!.updateEmail(trimmedEmail);
+      }
+
+      await _user!.updateDisplayName(trimmedName);
+      await _user!.reload();
+      _user = _authService.currentUser;
+
+      await _databaseService.updateUserData(
+        userId: _user!.uid,
+        email: trimmedEmail,
+        name: trimmedName,
+      );
+
+      _setLoading(false);
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _setError(_extractErrorMessage(e));
       _setLoading(false);
       return false;
     }

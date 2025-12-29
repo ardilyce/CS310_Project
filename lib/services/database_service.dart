@@ -27,6 +27,31 @@ class DatabaseService {
     }
   }
 
+  Future<Map<String, dynamic>?> getUserData(String userId) async {
+    try {
+      final doc = await _firestore.collection('users').doc(userId).get();
+      return doc.data();
+    } catch (e) {
+      throw 'Failed to load user data: $e';
+    }
+  }
+
+  Future<void> updateUserData({
+    required String userId,
+    required String email,
+    required String name,
+  }) async {
+    try {
+      await _firestore.collection('users').doc(userId).set({
+        'email': email,
+        'name': name,
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    } catch (e) {
+      throw 'Failed to update user data: $e';
+    }
+  }
+
   // Saving the Inquiries of the user to the database
   Future<void> saveInquiry({
     required String userId,
