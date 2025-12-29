@@ -1,14 +1,21 @@
 
 
 class Inquiry {
-
   String id;
   DateTime date;
   int score;
   String? message;
   final List<dynamic>? breakdown;
+  final String? riskLevel;
 
-  Inquiry(this.id, this.date, this.score, this.message, {this.breakdown});
+  Inquiry(
+    this.id,
+    this.date,
+    this.score,
+    this.message, {
+    this.breakdown,
+    this.riskLevel,
+  });
 
   String inquiryDateGen() {
     // MM/DD/YYyy
