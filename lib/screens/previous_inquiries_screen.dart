@@ -340,6 +340,7 @@ class _PreviousInquiriesScreenState extends State<PreviousInquiriesScreen> {
               data['message'] as String?,                      // message
               breakdown: data['breakdown'] as List<dynamic>?,
               riskLevel: data['riskLevel'] as String?,
+              createdBy: data['createdBy'] as String? ?? '',
             );
           }).toList();
 

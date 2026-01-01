@@ -7,6 +7,7 @@ class Inquiry {
   String? message;
   final List<dynamic>? breakdown;
   final String? riskLevel;
+  final String createdBy;
 
   Inquiry(
     this.id,
@@ -15,6 +16,7 @@ class Inquiry {
     this.message, {
     this.breakdown,
     this.riskLevel,
+    required this.createdBy,
   });
 
   String inquiryDateGen() {
@@ -29,7 +31,7 @@ class Inquiry {
 
   // Factory Method for Testing purposes
   factory Inquiry.mock({required String id, required int score, required String content, required DateTime date}) {
-    return Inquiry(id, date, score, content);
+    return Inquiry(id, date, score, content, createdBy: 'mock_user_id');
   }
 
 }

@@ -3,7 +3,7 @@ import 'package:project/models/inquiry.dart';
 
 void main() {
   test('inquiryDateGen formats with leading zeros and two-digit year', () {
-    final inquiry = Inquiry('1', DateTime(2025, 1, 9), 10, 'Test');
+    final inquiry = Inquiry('1', DateTime(2025, 1, 9), 10, 'Test', createdBy: 'test_user');
 
     expect(inquiry.inquiryDateGen(), '01/09/25');
   });

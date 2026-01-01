@@ -72,6 +72,7 @@ class DatabaseService {
         'riskLevel': result.riskLevel,
         'breakdown': breakdownMap,
         'timestamp': FieldValue.serverTimestamp(), // Ensures correct sorting by date
+        'createdBy': userId,
       });
     } catch (e) {
       throw 'Failed to save inquiry: $e';
