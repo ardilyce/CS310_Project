@@ -20,14 +20,37 @@ class TextInputScreen extends StatefulWidget {
 class _TextInputScreenState extends State<TextInputScreen> {
   final TextEditingController _textController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  final ScrollController _scrollController = ScrollController();
   OverlayEntry? _errorOverlay;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
+  void initState() {
+    super.initState();
+    
+    // Listen to focus changes to scroll when keyboard opens
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        // Delay to ensure keyboard is shown
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (_scrollController.hasClients) {
+            _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+            );
+          }
+        });
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _textController.dispose();
     _focusNode.dispose();
+    _scrollController.dispose();
     _errorOverlay?.remove();
     super.dispose();
   }
@@ -104,23 +127,24 @@ class _TextInputScreenState extends State<TextInputScreen> {
     final screenWidth = media.size.width;
     final screenHeight = media.size.height;
 
-    // klavye açıksa > 0 olur
-    final keyboardHeight = media.viewInsets.bottom;
-
-    // AppBar + üst boşluk
+    // AppBar + üst boşluk + buton alanı (buton yüksekliği + padding)
     const appBarAndPadding = kToolbarHeight + 40;
+    const buttonArea = 55 + 40; // button height + padding
 
-    // kullanılabilir yükseklik
-    final availableHeight = screenHeight - keyboardHeight - appBarAndPadding;
+    // kullanılabilir yükseklik (klavye kapalıyken hesapla - sabit kalsın)
+    final availableHeight = screenHeight - appBarAndPadding - buttonArea;
 
-    // kare boyutu: genişliğe VE yüksekliğe göre güvenli
-    final double size = ui.lerpDouble(
-      screenWidth - 48,
-      availableHeight * 0.65,
-      keyboardHeight > 0 ? 1.0 : 0.0,
-    )!;
+    // kare boyutu: genişliğe VE yüksekliğe göre güvenli (klavye durumundan bağımsız)
+    double size = screenWidth - 48;
+    // Küçük ekranlarda taşmayı önlemek için maksimum boyut sınırı
+    final maxSize = availableHeight * 0.6;
+    if (size > maxSize) {
+      size = maxSize;
+    }
 
     return Scaffold(
+      backgroundColor: AppUtility.background,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: AppUtility.primaryBlue, // Style from your example
         elevation: 0,
@@ -141,113 +165,134 @@ class _TextInputScreenState extends State<TextInputScreen> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: availableHeight,
-            ),
-            child: Column(
-              children: [
-                const SizedBox(height: 40),
+      body: Column(
+        children: [
+          // Scrollable content area
+          Expanded(
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 40),
 
-                /// KARE INPUT BOX
-                GestureDetector(
-                  onTap: _handleTapToEnterText, // Call the tap handler
-                  child: Container(
-                    width: size,
-                    height: size, // KARE
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: CustomPaint(
-                      painter: _DashedBorderPainter(), // Re-using your painter
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: TextField(
-                          controller: _textController,
-                          focusNode: _focusNode,
-                          textAlign: TextAlign.left,
-                          decoration: const InputDecoration(
-                            hintText: "Tap to enter text.",
-                            border: InputBorder.none,
+                    /// KARE INPUT BOX
+                    GestureDetector(
+                      onTap: _handleTapToEnterText, // Call the tap handler
+                      child: Container(
+                        width: size,
+                        height: size, // KARE
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: CustomPaint(
+                          painter: _DashedBorderPainter(), // Re-using your painter
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: TextField(
+                              controller: _textController,
+                              focusNode: _focusNode,
+                              textAlign: TextAlign.left,
+                              textAlignVertical: TextAlignVertical.top,
+                              decoration: const InputDecoration(
+                                hintText: "Tap to enter text.",
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.zero,
+                              ),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                                color: AppUtility.textDark,
+                              ),
+                              maxLines: null,
+                              expands: true,
+                            ),
                           ),
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                            color: AppUtility.textDark,
-                          ),
-                          maxLines: null,
                         ),
                       ),
                     ),
-                  ),
+
+                    const SizedBox(height: 40),
+                  ],
                 ),
-
-                SizedBox(height: MediaQuery.of(context).size.height * 0.1), // Flexible spacing instead of Spacer
-                /// BOTTOM BUTTON
-                SizedBox(
-                  width: double.infinity,
-                  height: 55,
-                  child: ElevatedButton(
-                    // Inside TextInputScreen's Analyze Button onPressed:
-                    onPressed: () async {
-                      if (_textController.text.trim().isEmpty) {
-                        _showTopError("Please enter some text first.");
-                        return;
-                      }
-
-                      final AnalysisResult result = AnalysisService.analyzeText(
-                        _textController.text,
-                      );
-                      final User? user = FirebaseAuth.instance.currentUser;
-
-                      if (user != null) {
-                        // Get the KeepHistory preference
-                        final prefs = await SharedPreferences.getInstance();
-                        final bool shouldSave = prefs.getBool('keep_history') ?? true;
-
-                        // Save to database only if that preference is set
-                        if(shouldSave){
-                          // USE THE SERVICE: Standardized path and field names
-                          await DatabaseService().saveInquiry(
-                            userId: user.uid,
-                            result: result,
-                          );
-                        }
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AnalyzeScreen(result: result),
-                          ),
-                        );
-                      } else {
-                        _showTopError("You need to be logged in to save text.");
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppUtility.primaryBlue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: Text(
-                      "Analyze From Text", // Text from your image
-                      style: TextStyle(
-                        color: AppUtility.textWhite,
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 25), // Bottom spacing
-              ],
+              ),
             ),
           ),
-        ),
+
+          // Fixed bottom button
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+            decoration: BoxDecoration(
+              color: AppUtility.background,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+            ),
+            child: SafeArea(
+              top: false,
+              child: SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  // Inside TextInputScreen's Analyze Button onPressed:
+                  onPressed: () async {
+                    if (_textController.text.trim().isEmpty) {
+                      _showTopError("Please enter some text first.");
+                      return;
+                    }
+
+                    final AnalysisResult result = AnalysisService.analyzeText(
+                      _textController.text,
+                    );
+                    final User? user = FirebaseAuth.instance.currentUser;
+
+                    if (user != null) {
+                      // Get the KeepHistory preference
+                      final prefs = await SharedPreferences.getInstance();
+                      final bool shouldSave = prefs.getBool('keep_history') ?? true;
+
+                      // Save to database only if that preference is set
+                      if(shouldSave){
+                        // USE THE SERVICE: Standardized path and field names
+                        await DatabaseService().saveInquiry(
+                          userId: user.uid,
+                          result: result,
+                        );
+                      }
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AnalyzeScreen(result: result),
+                        ),
+                      );
+                    } else {
+                      _showTopError("You need to be logged in to save text.");
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppUtility.primaryBlue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    "Analyze From Text", // Text from your image
+                    style: TextStyle(
+                      color: AppUtility.textWhite,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

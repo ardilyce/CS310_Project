@@ -126,116 +126,131 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
         ),
       ),
 
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: availableHeight,
-            ),
-            child: Column(
-              children: [
-                const SizedBox(height: 40),
+      body: Column(
+        children: [
+          // Scrollable content area
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 40),
 
-                /// KARE UPLOAD BOX
-                GestureDetector(
-                  onTap: _pickImage,
-                  child: Container(
-                    width: size,
-                    height: size, // RECTANGLE DEĞİL → KARE
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: CustomPaint(
-                      painter: _DashedBorderPainter(),
-                      child: _selectedImage == null
-                          ? Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.camera_alt,
-                                  color: AppUtility.primaryBlue,
-                                  size: 45,
-                                ),
-                                SizedBox(height: 16),
-                                Text(
-                                  "Tap to upload a photo",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 16,
-                                    color: AppUtility.textDark,
-                                  ),
-                                ),
-                                SizedBox(height: 6),
-                                Text(
-                                  "Supported formats: JPG, PNG",
-                                  style: TextStyle(
-                                    color: AppUtility.textGrey,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            )
-                          : ClipRRect(
-                              borderRadius: BorderRadius.circular(16),
-                              child: Image.file(
-                                _selectedImage!,
-                                width: size,
-                                height: size,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                    ),
-                  ),
-                ),
-
-                SizedBox(height: screenHeight * 0.1), // Flexible spacing instead of Spacer
-                /// BOTTOM BUTTON
-                SizedBox(
-                  width: double.infinity,
-                  height: 55,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      if (_selectedImage == null) {
-                        _showTopError("Please upload an image first.");
-                        return;
-                      }
-
-                      final extractedText = await OcrUtility.extractText(
-                        _selectedImage!,
-                      );
-
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ExtractedTextScreen(extractedText: extractedText),
+                    /// KARE UPLOAD BOX
+                    GestureDetector(
+                      onTap: _pickImage,
+                      child: Container(
+                        width: size,
+                        height: size, // RECTANGLE DEĞİL → KARE
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                      );
-                    },
+                        child: CustomPaint(
+                          painter: _DashedBorderPainter(),
+                          child: _selectedImage == null
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.camera_alt,
+                                      color: AppUtility.primaryBlue,
+                                      size: 45,
+                                    ),
+                                    SizedBox(height: 16),
+                                    Text(
+                                      "Tap to upload a photo",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16,
+                                        color: AppUtility.textDark,
+                                      ),
+                                    ),
+                                    SizedBox(height: 6),
+                                    Text(
+                                      "Supported formats: JPG, PNG",
+                                      style: TextStyle(
+                                        color: AppUtility.textGrey,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : ClipRRect(
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: Image.file(
+                                    _selectedImage!,
+                                    width: size,
+                                    height: size,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ),
 
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppUtility.primaryBlue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: Text(
-                      "Analyze Image",
-                      style: TextStyle(
-                        color: AppUtility.textWhite,
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+                    const SizedBox(height: 40),
+                  ],
                 ),
-
-                const SizedBox(height: 25),
-              ],
+              ),
             ),
           ),
-        ),
+
+          // Fixed bottom button
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+            decoration: BoxDecoration(
+              color: AppUtility.background,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+            ),
+            child: SafeArea(
+              child: SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (_selectedImage == null) {
+                      _showTopError("Please upload an image first.");
+                      return;
+                    }
+
+                    final extractedText = await OcrUtility.extractText(
+                      _selectedImage!,
+                    );
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ExtractedTextScreen(extractedText: extractedText),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppUtility.primaryBlue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    "Analyze Image",
+                    style: TextStyle(
+                      color: AppUtility.textWhite,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
