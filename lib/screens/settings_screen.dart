@@ -63,7 +63,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (name is String && name.isNotEmpty) {
         _nameController.text = name;
       }
-      if (_emailController.text.isEmpty && storedEmail is String && storedEmail.isNotEmpty) {
+      if (_emailController.text.isEmpty &&
+          storedEmail is String &&
+          storedEmail.isNotEmpty) {
         _emailController.text = storedEmail;
       }
     }
@@ -86,7 +88,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       email: _emailController.text,
     );
 
-    if (!success && authProvider.requiresRecentLogin && emailChanged && mounted) {
+    if (!success &&
+        authProvider.requiresRecentLogin &&
+        emailChanged &&
+        mounted) {
       final String? password = await _promptForPassword();
       if (password != null && password.isNotEmpty) {
         success = await authProvider.updateUserProfile(
@@ -109,7 +114,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(authProvider.errorMessage ?? 'Failed to update profile.')),
+        SnackBar(
+          content: Text(
+            authProvider.errorMessage ?? 'Failed to update profile.',
+          ),
+        ),
       );
     }
   }
@@ -124,9 +133,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         content: TextField(
           controller: passwordController,
           obscureText: true,
-          decoration: const InputDecoration(
-            labelText: 'Current password',
-          ),
+          decoration: const InputDecoration(labelText: 'Current password'),
         ),
         actions: [
           TextButton(
@@ -150,10 +157,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     // not super clean layout but works
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Settings',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Settings', style: TextStyle(color: Colors.white)),
         backgroundColor: AppUtility.primaryBlue,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
@@ -214,7 +218,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     width: double.infinity,
                     height: 48,
                     child: ElevatedButton(
-                      onPressed: (_isLoadingProfile || _isUpdatingProfile) ? null : _saveProfile,
+                      onPressed: (_isLoadingProfile || _isUpdatingProfile)
+                          ? null
+                          : _saveProfile,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppUtility.thirdBlue,
                         disabledBackgroundColor: Colors.grey,
@@ -330,16 +336,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
               height: 55,
               child: ElevatedButton(
                 onPressed: () async {
-                  final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                  final authProvider = Provider.of<AuthProvider>(
+                    context,
+                    listen: false,
+                  );
 
                   final confirm = await showDialog<bool>(
                     context: context,
                     builder: (context) => AlertDialog(
                       title: const Text('Clear History'),
-                      content: const Text('This will delete all your past inquiries. Continue?'),
+                      content: const Text(
+                        'This will delete all your past inquiries. Continue?',
+                      ),
                       actions: [
-                        TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-                        TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Clear', style: TextStyle(color: Colors.red))),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text(
+                            'Clear',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
                       ],
                     ),
                   );
@@ -348,7 +368,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     bool success = await authProvider.clearHistory();
                     if (success && mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('History cleared successfully.')),
+                        const SnackBar(
+                          content: Text('History cleared successfully.'),
+                        ),
                       );
                     }
                   }
@@ -391,14 +413,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               builder: (BuildContext context) {
                                 return AlertDialog(
                                   title: const Text('Logout'),
-                                  content: const Text('Are you sure you want to logout?'),
+                                  content: const Text(
+                                    'Are you sure you want to logout?',
+                                  ),
                                   actions: [
                                     TextButton(
-                                      onPressed: () => Navigator.of(context).pop(false),
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
                                       child: const Text('Cancel'),
                                     ),
                                     TextButton(
-                                      onPressed: () => Navigator.of(context).pop(true),
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(true),
                                       child: const Text('Logout'),
                                     ),
                                   ],
@@ -429,9 +455,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ? const SizedBox(
                             height: 20,
                             width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                            ),
+                            child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : Text(
                             'Logout',
@@ -459,10 +483,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 4),
                 Text(
                   'Account Settings',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppUtility.textGrey,
-                  ),
+                  style: TextStyle(fontSize: 12, color: AppUtility.textGrey),
                 ),
                 const SizedBox(height: 10),
                 SizedBox(
@@ -470,18 +491,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () async {
-                      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                      final authProvider = Provider.of<AuthProvider>(
+                        context,
+                        listen: false,
+                      );
 
                       final confirm = await showDialog<bool>(
                         context: context,
                         builder: (context) => AlertDialog(
                           title: const Text('Delete Account'),
-                          content: const Text('This action is permanent and will delete all your data.'),
+                          content: const Text(
+                            'This action is permanent and will delete all your data.',
+                          ),
                           actions: [
-                            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
                             TextButton(
-                                onPressed: () => Navigator.pop(context, true),
-                                child: const Text('Delete Everything', style: TextStyle(color: Colors.red))
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              child: const Text(
+                                'Delete Everything',
+                                style: TextStyle(color: Colors.red),
+                              ),
                             ),
                           ],
                         ),
@@ -489,11 +521,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                       if (confirm == true && mounted) {
                         bool success = await authProvider.deleteAccount();
-                        if (success && mounted) {
-                          Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-                        } else if (mounted) {
+                        if (!mounted) return;
+
+                        if (success) {
+                          Navigator.of(
+                            context,
+                            rootNavigator: true,
+                          ).pushNamedAndRemoveUntil("/login", (route) => false);
+                        } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(authProvider.errorMessage ?? 'Error deleting account')),
+                            SnackBar(
+                              content: Text(
+                                authProvider.errorMessage ??
+                                    "Error deleting account",
+                              ),
+                            ),
                           );
                         }
                       }
