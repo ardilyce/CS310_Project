@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart';
 import 'utility_class.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -21,8 +22,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
+    _loadPreferences();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadProfile();
+    });
+  }
+
+  Future<void> _loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _keepHistory = prefs.getBool('keep_history') ?? true;
     });
   }
 
@@ -298,10 +307,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     value: _keepHistory,
                     activeColor: Colors.white,
                     activeTrackColor: AppUtility.primaryBlue,
-                    onChanged: (value) {
+                    onChanged: (value) async {
                       setState(() {
                         _keepHistory = value;
                       });
+                      final prefs = await SharedPreferences.getInstance();
+                      await prefs.setBool('keep_history', value);
                     },
                   ),
                 ],

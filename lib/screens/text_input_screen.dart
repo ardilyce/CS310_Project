@@ -7,6 +7,7 @@ import '../services/analysis_service.dart';
 import 'analyze_screen.dart';
 import '../services/database_service.dart';
 import '../providers/auth_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // This is the new screen you asked for, based on your image.
 class TextInputScreen extends StatefulWidget {
@@ -198,12 +199,18 @@ class _TextInputScreenState extends State<TextInputScreen> {
                   final User? user = FirebaseAuth.instance.currentUser;
 
                   if (user != null) {
-                    // USE THE SERVICE: Standardized path and field names
-                    await DatabaseService().saveInquiry(
-                      userId: user.uid,
-                      result: result,
-                    );
+                    // Get the KeepHistory preference
+                    final prefs = await SharedPreferences.getInstance();
+                    final bool shouldSave = prefs.getBool('keep_history') ?? true;
 
+                    // Save to database only if that preference is set
+                    if(shouldSave){
+                      // USE THE SERVICE: Standardized path and field names
+                      await DatabaseService().saveInquiry(
+                        userId: user.uid,
+                        result: result,
+                      );
+                    }
                     Navigator.push(
                       context,
                       MaterialPageRoute(
