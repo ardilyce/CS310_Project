@@ -161,8 +161,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         backgroundColor: AppUtility.primaryBlue,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Column(
-        children: [
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Column(
+            children: [
           const SizedBox(height: 20),
 
           // Profile settings
@@ -470,8 +475,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
 
-          // push the rest to bottom
-          const Spacer(),
+          const SizedBox(height: 20),
 
           // bottom section
           Padding(
@@ -559,7 +563,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
             ),
           ),
-        ],
+            ],
+          ),
+        ),
       ),
     );
   }

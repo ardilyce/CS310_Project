@@ -50,94 +50,118 @@ class _ExtractedTextScreenState extends State<ExtractedTextScreen> {
         ),
       ),
 
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            /// EDITABLE TEXT BOX
-            Stack(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: 24,
+            right: 24,
+            top: 24,
+            bottom: 24 + MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height - 
+                         MediaQuery.of(context).padding.top - 
+                         kToolbarHeight - 
+                         MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: Column(
               children: [
-                Container(
+                /// EDITABLE TEXT BOX
+                Stack(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      constraints: BoxConstraints(
+                        minHeight: 200,
+                        maxHeight: MediaQuery.of(context).size.height * 0.5,
+                      ),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppUtility.secondaryBlue,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: TextField(
+                        controller: _textController,
+                        maxLines: null,
+                        expands: true,
+                        decoration: const InputDecoration(border: InputBorder.none),
+                        style: TextStyle(fontSize: 15, color: AppUtility.textDark),
+                      ),
+                    ),
+
+                    /// EDIT ICON
+                    Positioned(
+                      top: 12,
+                      right: 12,
+                      child: Icon(Icons.edit, color: AppUtility.textGrey),
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+
+                /// CONFIRM BUTTON
+                SizedBox(
                   width: double.infinity,
-                  height: 380,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppUtility.secondaryBlue,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: TextField(
-                    controller: _textController,
-                    maxLines: null,
-                    expands: true,
-                    decoration: const InputDecoration(border: InputBorder.none),
-                    style: TextStyle(fontSize: 15, color: AppUtility.textDark),
+                  height: 55,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      final textToAnalyze = _textController.text.trim();
+                      if (textToAnalyze.isEmpty) return;
+
+                      final AnalysisResult result = AnalysisService.analyzeText(
+                        textToAnalyze,
+                      );
+                      final User? user = FirebaseAuth.instance.currentUser;
+
+                      if (user != null) {
+                        // Get the KeepHistory preference
+                        final prefs = await SharedPreferences.getInstance();
+                        final bool shouldSave = prefs.getBool('keep_history') ?? true;
+
+                        // Save to database only if that preference is set
+                        if(shouldSave){// USE THE SERVICE: This saves to users/{uid}/inquiries
+                          await DatabaseService().saveInquiry(
+                            userId: user.uid,
+                            result: result,
+                          );
+                        }
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AnalyzeScreen(result: result),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("You must be logged in to analyze text."),
+                          ),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppUtility.primaryBlue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      "Confirm Text",
+                      style: TextStyle(
+                        color: AppUtility.textWhite,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
 
-                /// EDIT ICON
-                Positioned(
-                  top: 12,
-                  right: 12,
-                  child: Icon(Icons.edit, color: AppUtility.textGrey),
-                ),
+                const SizedBox(height: 24),
               ],
             ),
-
-            const Spacer(),
-
-            /// CONFIRM BUTTON
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: ElevatedButton(
-                onPressed: () async {
-                  final textToAnalyze = _textController.text.trim();
-                  if (textToAnalyze.isEmpty) return;
-
-                  final AnalysisResult result = AnalysisService.analyzeText(
-                    textToAnalyze,
-                  );
-                  final User? user = FirebaseAuth.instance.currentUser;
-
-                  if (user != null) {
-                    // Get the KeepHistory preference
-                    final prefs = await SharedPreferences.getInstance();
-                    final bool shouldSave = prefs.getBool('keep_history') ?? true;
-
-                    // Save to database only if that preference is set
-                    if(shouldSave){// USE THE SERVICE: This saves to users/{uid}/inquiries
-                      await DatabaseService().saveInquiry(
-                        userId: user.uid,
-                        result: result,
-                      );
-                    }
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AnalyzeScreen(result: result),
-                      ),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("You must be logged in to analyze text."),
-                      ),
-                    );
-                  }
-                },
-                child: Text(
-                  "Confirm Text",
-                  style: TextStyle(
-                    color: AppUtility.textWhite,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 24),
-          ],
+          ),
         ),
       ),
     );

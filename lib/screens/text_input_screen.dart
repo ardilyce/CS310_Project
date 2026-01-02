@@ -141,105 +141,112 @@ class _TextInputScreenState extends State<TextInputScreen> {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          children: [
-            const SizedBox(height: 40),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: availableHeight,
+            ),
+            child: Column(
+              children: [
+                const SizedBox(height: 40),
 
-            /// KARE INPUT BOX
-            GestureDetector(
-              onTap: _handleTapToEnterText, // Call the tap handler
-              child: Container(
-                width: size,
-                height: size, // KARE
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: CustomPaint(
-                  painter: _DashedBorderPainter(), // Re-using your painter
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: TextField(
-                      controller: _textController,
-                      focusNode: _focusNode,
-                      textAlign: TextAlign.left,
-                      decoration: const InputDecoration(
-                        hintText: "Tap to enter text.",
-                        border: InputBorder.none,
+                /// KARE INPUT BOX
+                GestureDetector(
+                  onTap: _handleTapToEnterText, // Call the tap handler
+                  child: Container(
+                    width: size,
+                    height: size, // KARE
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: CustomPaint(
+                      painter: _DashedBorderPainter(), // Re-using your painter
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: TextField(
+                          controller: _textController,
+                          focusNode: _focusNode,
+                          textAlign: TextAlign.left,
+                          decoration: const InputDecoration(
+                            hintText: "Tap to enter text.",
+                            border: InputBorder.none,
+                          ),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                            color: AppUtility.textDark,
+                          ),
+                          maxLines: null,
+                        ),
                       ),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                        color: AppUtility.textDark,
-                      ),
-                      maxLines: null,
                     ),
                   ),
                 ),
-              ),
-            ),
 
-            const Spacer(), // Pushes the button to the bottom
-            /// BOTTOM BUTTON
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: ElevatedButton(
-                // Inside TextInputScreen's Analyze Button onPressed:
-                onPressed: () async {
-                  if (_textController.text.trim().isEmpty) {
-                    _showTopError("Please enter some text first.");
-                    return;
-                  }
+                SizedBox(height: MediaQuery.of(context).size.height * 0.1), // Flexible spacing instead of Spacer
+                /// BOTTOM BUTTON
+                SizedBox(
+                  width: double.infinity,
+                  height: 55,
+                  child: ElevatedButton(
+                    // Inside TextInputScreen's Analyze Button onPressed:
+                    onPressed: () async {
+                      if (_textController.text.trim().isEmpty) {
+                        _showTopError("Please enter some text first.");
+                        return;
+                      }
 
-                  final AnalysisResult result = AnalysisService.analyzeText(
-                    _textController.text,
-                  );
-                  final User? user = FirebaseAuth.instance.currentUser;
-
-                  if (user != null) {
-                    // Get the KeepHistory preference
-                    final prefs = await SharedPreferences.getInstance();
-                    final bool shouldSave = prefs.getBool('keep_history') ?? true;
-
-                    // Save to database only if that preference is set
-                    if(shouldSave){
-                      // USE THE SERVICE: Standardized path and field names
-                      await DatabaseService().saveInquiry(
-                        userId: user.uid,
-                        result: result,
+                      final AnalysisResult result = AnalysisService.analyzeText(
+                        _textController.text,
                       );
-                    }
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AnalyzeScreen(result: result),
-                      ),
-                    );
-                  } else {
-                    _showTopError("You need to be logged in to save text.");
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppUtility.primaryBlue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(
-                  "Analyze From Text", // Text from your image
-                  style: TextStyle(
-                    color: AppUtility.textWhite,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
+                      final User? user = FirebaseAuth.instance.currentUser;
 
-            const SizedBox(height: 25), // Bottom spacing
-          ],
+                      if (user != null) {
+                        // Get the KeepHistory preference
+                        final prefs = await SharedPreferences.getInstance();
+                        final bool shouldSave = prefs.getBool('keep_history') ?? true;
+
+                        // Save to database only if that preference is set
+                        if(shouldSave){
+                          // USE THE SERVICE: Standardized path and field names
+                          await DatabaseService().saveInquiry(
+                            userId: user.uid,
+                            result: result,
+                          );
+                        }
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AnalyzeScreen(result: result),
+                          ),
+                        );
+                      } else {
+                        _showTopError("You need to be logged in to save text.");
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppUtility.primaryBlue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      "Analyze From Text", // Text from your image
+                      style: TextStyle(
+                        color: AppUtility.textWhite,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 25), // Bottom spacing
+              ],
+            ),
+          ),
         ),
       ),
     );
