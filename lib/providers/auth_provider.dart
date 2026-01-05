@@ -238,11 +238,35 @@ class AuthProvider with ChangeNotifier {
   }
 
   // Delete Account
-  Future<bool> deleteAccount() async {
+  Future<bool> deleteAccount({String? currentPassword}) async {
     if (_user == null) return false;
     try {
       _setLoading(true);
+      _clearError();
+      _requiresRecentLogin = false;
       String uid = _user!.uid;
+
+      if (currentPassword == null || currentPassword.isEmpty) {
+        final DateTime? lastSignIn = _user!.metadata.lastSignInTime;
+        if (lastSignIn == null ||
+            DateTime.now().difference(lastSignIn) > const Duration(minutes: 1)) {
+          _requiresRecentLogin = true;
+          _setError('Please re-enter your password to delete your account.');
+          _setLoading(false);
+          return false;
+        }
+      } else {
+        final String? currentEmail = _user!.email;
+        if (currentEmail == null || currentEmail.isEmpty) {
+          throw 'Unable to verify your email. Please log in again.';
+        }
+
+        final credential = EmailAuthProvider.credential(
+          email: currentEmail,
+          password: currentPassword,
+        );
+        await _user!.reauthenticateWithCredential(credential);
+      }
 
       // 1. Delete Firestore data
       await _databaseService.deleteUserData(uid);
@@ -254,8 +278,17 @@ class AuthProvider with ChangeNotifier {
       _setLoading(false);
       notifyListeners();
       return true;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        _requiresRecentLogin = true;
+        _setError('Please re-enter your password to delete your account.');
+      } else {
+        _setError(_extractErrorMessage(e));
+      }
+      _setLoading(false);
+      return false;
     } catch (e) {
-      _setError("Please re-log in before deleting your account for security.");
+      _setError(_extractErrorMessage(e));
       _setLoading(false);
       return false;
     }

@@ -124,16 +124,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<String?> _promptForPassword() async {
-    final TextEditingController passwordController = TextEditingController();
+    String passwordValue = '';
 
     final String? password = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Re-authentication required'),
         content: TextField(
-          controller: passwordController,
           obscureText: true,
           decoration: const InputDecoration(labelText: 'Current password'),
+          onChanged: (value) => passwordValue = value,
         ),
         actions: [
           TextButton(
@@ -141,14 +141,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, passwordController.text),
+            onPressed: () => Navigator.pop(context, passwordValue),
             child: const Text('Continue'),
           ),
         ],
       ),
     );
 
-    passwordController.dispose();
     return password;
   }
 
@@ -525,14 +524,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                       if (confirm == true && mounted) {
                         bool success = await authProvider.deleteAccount();
+
+                        if (!success &&
+                            authProvider.requiresRecentLogin &&
+                            mounted) {
+                          final String? password = await _promptForPassword();
+                          if (password != null && password.isNotEmpty) {
+                            success = await authProvider.deleteAccount(
+                              currentPassword: password,
+                            );
+                          }
+                        }
+
                         if (!mounted) return;
 
-                        if (success) {
-                          Navigator.of(
-                            context,
-                            rootNavigator: true,
-                          ).pushNamedAndRemoveUntil("/login", (route) => false);
-                        } else {
+                        if (!success) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(

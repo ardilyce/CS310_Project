@@ -131,17 +131,7 @@ class MyApp extends StatelessWidget {
 
                   // If user is not authenticated, redirect to login
                   if (user == null || !authProvider.isAuthenticated) {
-                    // Use WidgetsBinding to ensure navigation happens after build
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (context.mounted) {
-                        Navigator.of(
-                          context,
-                        ).pushNamedAndRemoveUntil('/login', (route) => false);
-                      }
-                    });
-                    return const Scaffold(
-                      body: Center(child: CircularProgressIndicator()),
-                    );
+                    return const LoginScreen();
                   }
 
                   // User is authenticated, show the protected route
